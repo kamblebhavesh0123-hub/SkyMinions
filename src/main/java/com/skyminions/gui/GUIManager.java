@@ -33,36 +33,33 @@ public class GUIManager {
             gui.setItem(i, border);
         }
 
+        // Add Minions
         for (MinionConfig minionConfig : plugin.getConfigManager().getAllConfigs().values()) {
             if (minionConfig.getShopSlot() >= 0 && minionConfig.getShopSlot() < 27) {
                 gui.setItem(minionConfig.getShopSlot(), ItemUtil.createMinionItem(minionConfig.getType(), 1));
             }
         }
 
+        // Add Upgrade Items at the bottom row
+        gui.setItem(21, createGuiItem(Material.FURNACE, 
+                Component.text("Buy Auto-Smelter", NamedTextColor.GREEN, TextDecoration.BOLD),
+                Component.text("Automatically smelts harvested ores!", NamedTextColor.GRAY),
+                Component.text("Click to purchase for 64x Cobblestone", NamedTextColor.YELLOW)));
+
+        gui.setItem(22, createGuiItem(Material.COAL, 
+                Component.text("Buy Enchanted Fuel", NamedTextColor.GOLD, TextDecoration.BOLD),
+                Component.text("+100% Speed Boost for Minions!", NamedTextColor.GRAY),
+                Component.text("Click to purchase for 16x Coal", NamedTextColor.YELLOW)));
+
+        gui.setItem(23, createGuiItem(Material.PISTON, 
+                Component.text("Buy Auto-Compactor", NamedTextColor.BLUE, TextDecoration.BOLD),
+                Component.text("Compresses harvested items into blocks!", NamedTextColor.GRAY),
+                Component.text("Click to purchase for 64x Redstone", NamedTextColor.YELLOW)));
+
         player.openInventory(gui);
     }
 
     public void openMainMenu(Player player, Minion minion) {
-        // Calculate Offline Earnings
-        long now = System.currentTimeMillis();
-        long timePassedSeconds = (now - minion.getLastCollectedTime()) / 1000;
-        int secondsPerAction = minion.hasFuel() ? 7 : 14;
-        
-        if (timePassedSeconds >= secondsPerAction) {
-            int actionsCount = (int) (timePassedSeconds / secondsPerAction);
-            int itemsProduced = actionsCount * (minion.hasFuel() ? 2 : 1);
-            int maxCapacity = minion.getLevel() * 128;
-
-            int newTotal = Math.min(minion.getStoredAmount() + itemsProduced, maxCapacity);
-            int generatedOffline = newTotal - minion.getStoredAmount();
-
-            if (generatedOffline > 0) {
-                minion.setStoredAmount(newTotal);
-                player.sendMessage(Component.text("While you were away, your minion generated " + generatedOffline + " items!", NamedTextColor.GOLD));
-            }
-            minion.setLastCollectedTime(now);
-        }
-
         MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
         String romanLevel = toRoman(minion.getLevel());
         Component title = Component.text(minion.getType() + " Minion " + romanLevel, NamedTextColor.DARK_GRAY);
@@ -177,5 +174,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-    }
-                                                                       
+             }
+                                      
