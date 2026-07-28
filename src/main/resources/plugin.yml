@@ -1,0 +1,13 @@
+name: SkyMinions
+version: 1.0.0
+main: com.skyminions.SkyMinionsPlugin
+api-version: '1.21'
+author: Bhavesh
+depend: [Vault]
+softdepend: [PlaceholderAPI]
+
+commands:
+  minion:
+    description: Main command for SkyMinions
+    permission: skyminions.admin
+    
