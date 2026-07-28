@@ -1,6 +1,8 @@
 package com.skyminions.minions;
 
+import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
+import com.skyminions.models.MinionConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -26,6 +28,9 @@ public class MinionEntity {
         Location loc = minion.getLocation();
         if (loc == null || loc.getWorld() == null) return null;
 
+        SkyMinionsPlugin plugin = SkyMinionsPlugin.getPlugin(SkyMinionsPlugin.class);
+        MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
+
         ArmorStand stand = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
         stand.setGravity(false);
         stand.setArms(true);
@@ -33,44 +38,33 @@ public class MinionEntity {
         stand.setSmall(true);
         stand.setCustomNameVisible(true);
 
-        // Name Tag: "COBBLESTONE Minion [Lv.1]"
         Component customName = Component.text(minion.getType() + " Minion ", NamedTextColor.AQUA)
                 .append(Component.text("[Lv." + minion.getLevel() + "]", NamedTextColor.GRAY));
         stand.customName(customName);
 
-        // Equip Custom Miner Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta headMeta = (SkullMeta) head.getItemMeta();
         if (headMeta != null) {
-            setSkullTexture(headMeta, "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3");
+            String url = (config != null && !config.getHeadTexture().isEmpty()) 
+                    ? config.getHeadTexture() 
+                    : "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3";
+            setSkullTexture(headMeta, url);
             head.setItemMeta(headMeta);
         }
         stand.setItem(EquipmentSlot.HEAD, head);
 
-        // Equip Dark Leather Chestplate
         ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta chestMeta = (LeatherArmorMeta) chest.getItemMeta();
         if (chestMeta != null) {
-            chestMeta.setColor(Color.fromRGB(25, 25, 25));
+            chestMeta.setColor(config != null ? config.getArmorColor() : Color.fromRGB(25, 25, 25));
             chest.setItemMeta(chestMeta);
         }
         stand.setItem(EquipmentSlot.CHEST, chest);
 
-        // Equip Tool in Hand
-        Material toolMaterial = getToolForType(minion.getType());
-        stand.setItem(EquipmentSlot.HAND, new ItemStack(toolMaterial));
+        Material toolMat = config != null ? config.getToolMaterial() : Material.DIAMOND_PICKAXE;
+        stand.setItem(EquipmentSlot.HAND, new ItemStack(toolMat));
 
         return stand;
-    }
-
-    private static Material getToolForType(String type) {
-        return switch (type.toUpperCase()) {
-            case "FARMING" -> Material.DIAMOND_HOE;
-            case "FORAGING" -> Material.DIAMOND_AXE;
-            case "COMBAT" -> Material.DIAMOND_SWORD;
-            case "FISHING" -> Material.FISHING_ROD;
-            default -> Material.DIAMOND_PICKAXE; // Mining
-        };
     }
 
     private static void setSkullTexture(SkullMeta meta, String textureUrl) {
@@ -82,4 +76,5 @@ public class MinionEntity {
         profile.setTextures(textures);
         meta.setOwnerProfile(profile);
     }
-}
+            }
+                
