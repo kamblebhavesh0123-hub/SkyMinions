@@ -2,6 +2,7 @@ package com.skyminions.gui;
 
 import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
+import com.skyminions.models.MinionConfig;
 import com.skyminions.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -32,14 +33,18 @@ public class GUIManager {
             gui.setItem(i, border);
         }
 
-        gui.setItem(11, ItemUtil.createMinionItem("COBBLESTONE", 1));
-        gui.setItem(13, ItemUtil.createMinionItem("WHEAT", 1));
-        gui.setItem(15, ItemUtil.createMinionItem("OAK", 1));
+        // Dynamically add all configured minions into the shop
+        for (MinionConfig minionConfig : plugin.getConfigManager().getAllConfigs().values()) {
+            if (minionConfig.getShopSlot() >= 0 && minionConfig.getShopSlot() < 27) {
+                gui.setItem(minionConfig.getShopSlot(), ItemUtil.createMinionItem(minionConfig.getType(), 1));
+            }
+        }
 
         player.openInventory(gui);
     }
 
     public void openMainMenu(Player player, Minion minion) {
+        MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
         String romanLevel = toRoman(minion.getLevel());
         Component title = Component.text(minion.getType() + " Minion " + romanLevel, NamedTextColor.DARK_GRAY);
         Inventory gui = Bukkit.createInventory(null, 54, title);
@@ -59,7 +64,6 @@ public class GUIManager {
 
         gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Auto Sell Slot", NamedTextColor.GREEN, TextDecoration.BOLD)));
 
-        // Fuel Slot Status
         if (minion.hasFuel()) {
             gui.setItem(19, createGuiItem(Material.COAL, 
                     Component.text("Active Fuel: Coal (+100% Speed)", NamedTextColor.GOLD, TextDecoration.BOLD),
@@ -75,7 +79,7 @@ public class GUIManager {
 
         int[] storageSlots = {21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43};
         int remainingItems = minion.getStoredAmount();
-        Material resourceMat = getResourceMaterial(minion.getType());
+        Material resourceMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
 
         for (int slot : storageSlots) {
             if (remainingItems > 0) {
@@ -92,14 +96,6 @@ public class GUIManager {
         gui.setItem(52, createGuiItem(Material.BEDROCK, Component.text("Pickup Minion", NamedTextColor.RED, TextDecoration.BOLD)));
 
         player.openInventory(gui);
-    }
-
-    private Material getResourceMaterial(String type) {
-        return switch (type.toUpperCase()) {
-            case "WHEAT" -> Material.WHEAT;
-            case "OAK" -> Material.OAK_LOG;
-            default -> Material.COBBLESTONE;
-        };
     }
 
     private ItemStack createGuiItem(Material material, Component name, Component... lore) {
@@ -119,5 +115,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-                                          }
-    
+                                      }
+                               
