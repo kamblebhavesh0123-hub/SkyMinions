@@ -3,6 +3,7 @@ package com.skyminions.managers;
 import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -67,12 +68,16 @@ public class MinionManager {
     }
 
     private void loadMinions() {
-        if (!dataConfig.contains("minions")) return;
+        ConfigurationSection section = dataConfig.getConfigurationSection("minions");
+        if (section == null) return;
 
-        for (String key : dataConfig.getConfigurationSection("minions").getKeys(false)) {
+        for (String key : section.getKeys(false)) {
             UUID id = UUID.fromString(key);
             String path = "minions." + key + ".";
-            UUID owner = UUID.fromString(dataConfig.getString(path + "owner"));
+            String ownerStr = dataConfig.getString(path + "owner");
+            if (ownerStr == null) continue;
+
+            UUID owner = UUID.fromString(ownerStr);
             String type = dataConfig.getString(path + "type");
             int level = dataConfig.getInt(path + "level");
             Location loc = dataConfig.getLocation(path + "location");
@@ -89,5 +94,5 @@ public class MinionManager {
             plugin.getLogger().severe("Could not save minions_data.yml!");
         }
     }
-        }
-        
+    }
+                
