@@ -1,56 +1,61 @@
 package com.skyminions.models;
 
 import org.bukkit.Location;
-
 import java.util.UUID;
 
 public class Minion {
-
     private final UUID minionId;
-    private final UUID ownerUUID;
+    private final UUID ownerId;
     private final String type;
     private int level;
     private Location location;
-    private int storedAmount;
-    private boolean hasFuel;
+    private final MinionStorage storage;
     private boolean hasSmelter;
     private boolean hasCompactor;
-    private long lastCollectedTime;
+    private boolean hasFuel;
 
-    public Minion(UUID minionId, UUID ownerUUID, String type, int level, Location location) {
+    public Minion(UUID minionId, UUID ownerId, String type, int level, Location location) {
         this.minionId = minionId;
-        this.ownerUUID = ownerUUID;
+        this.ownerId = ownerId;
         this.type = type;
         this.level = level;
         this.location = location;
-        this.storedAmount = 0;
-        this.hasFuel = false;
-        this.hasSmelter = false;
-        this.hasCompactor = false;
-        this.lastCollectedTime = System.currentTimeMillis();
+        this.storage = new MinionStorage(level * 128);
     }
 
     public UUID getMinionId() { return minionId; }
-    public UUID getOwnerUUID() { return ownerUUID; }
+    public UUID getOwnerId() { return ownerId; }
     public String getType() { return type; }
     public int getLevel() { return level; }
-    public void setLevel(int level) { this.level = level; }
+    public void setLevel(int level) { 
+        this.level = level; 
+        if (this.storage != null) {
+            this.storage.setCapacity(level * 128);
+        }
+    }
     public Location getLocation() { return location; }
-    public void setLocation(Location location) { this.location = location; }
+    
+    // Storage Getter
+    public MinionStorage getStorage() { return storage; }
 
-    public int getStoredAmount() { return storedAmount; }
-    public void setStoredAmount(int storedAmount) { this.storedAmount = storedAmount; }
-    public void addStoredAmount(int amount) { this.storedAmount += amount; }
+    // Direct helper methods for stored amount
+    public int getStoredAmount() { 
+        return storage != null ? storage.getStoredAmount() : 0; 
+    }
+    public void setStoredAmount(int amount) { 
+        if (storage != null) storage.setStoredAmount(amount); 
+    }
+    public void addStoredAmount(int amount) { 
+        if (storage != null) storage.setStoredAmount(getStoredAmount() + amount); 
+    }
 
-    public boolean hasFuel() { return hasFuel; }
-    public void setHasFuel(boolean hasFuel) { this.hasFuel = hasFuel; }
-
+    // Upgrade Getters & Setters
     public boolean hasSmelter() { return hasSmelter; }
     public void setHasSmelter(boolean hasSmelter) { this.hasSmelter = hasSmelter; }
 
     public boolean hasCompactor() { return hasCompactor; }
     public void setHasCompactor(boolean hasCompactor) { this.hasCompactor = hasCompactor; }
 
-    public long getLastCollectedTime() { return lastCollectedTime; }
-    public void setLastCollectedTime(long lastCollectedTime) { this.lastCollectedTime = lastCollectedTime; }
-}
+    public boolean hasFuel() { return hasFuel; }
+    public void setHasFuel(boolean hasFuel) { this.hasFuel = hasFuel; }
+    }
