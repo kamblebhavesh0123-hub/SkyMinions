@@ -2,6 +2,7 @@ package com.skyminions.gui;
 
 import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
+import com.skyminions.models.MinionConfig;
 import com.skyminions.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -34,10 +35,11 @@ public class GUIListener implements Listener {
             if (event.getCurrentItem() == null) return;
 
             int slot = event.getSlot();
-            switch (slot) {
-                case 11 -> buyMinion(player, "COBBLESTONE");
-                case 13 -> buyMinion(player, "WHEAT");
-                case 15 -> buyMinion(player, "OAK");
+            for (MinionConfig config : plugin.getConfigManager().getAllConfigs().values()) {
+                if (config.getShopSlot() == slot) {
+                    buyMinion(player, config.getType());
+                    return;
+                }
             }
             return;
         }
@@ -58,7 +60,6 @@ public class GUIListener implements Listener {
 
             int slot = event.getSlot();
             switch (slot) {
-                // Fuel Slot Toggle
                 case 19 -> {
                     if (targetMinion.hasFuel()) {
                         targetMinion.setHasFuel(false);
@@ -75,10 +76,10 @@ public class GUIListener implements Listener {
                     }
                     plugin.getGuiManager().openMainMenu(player, targetMinion);
                 }
-                // Collect All Items
                 case 48 -> {
                     if (targetMinion.getStoredAmount() > 0) {
-                        Material resourceMat = getResourceMaterial(targetMinion.getType());
+                        MinionConfig config = plugin.getConfigManager().getMinionConfig(targetMinion.getType());
+                        Material resourceMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
                         int amount = targetMinion.getStoredAmount();
                         player.getInventory().addItem(new ItemStack(resourceMat, amount));
                         targetMinion.setStoredAmount(0);
@@ -88,9 +89,7 @@ public class GUIListener implements Listener {
                         player.sendMessage(Component.text("No items to collect!", NamedTextColor.RED));
                     }
                 }
-                // Upgrade Minion Tier
                 case 50 -> upgradeMinion(player, targetMinion);
-                // Pickup Minion
                 case 52 -> {
                     player.closeInventory();
                     for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
@@ -112,7 +111,8 @@ public class GUIListener implements Listener {
             return;
         }
 
-        Material requiredMat = getResourceMaterial(minion.getType());
+        MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
+        Material requiredMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
         int requiredAmount = minion.getLevel() * 64;
 
         if (player.getInventory().containsAtLeast(new ItemStack(requiredMat), requiredAmount)) {
@@ -141,13 +141,5 @@ public class GUIListener implements Listener {
         player.sendMessage(Component.text("Purchased " + type + " Minion Lv.1!", NamedTextColor.GREEN));
         player.closeInventory();
     }
-
-    private Material getResourceMaterial(String type) {
-        return switch (type.toUpperCase()) {
-            case "WHEAT" -> Material.WHEAT;
-            case "OAK" -> Material.OAK_LOG;
-            default -> Material.COBBLESTONE;
-        };
-    }
-                }
-                    
+                            }
+                            
