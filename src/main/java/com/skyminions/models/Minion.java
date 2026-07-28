@@ -12,6 +12,7 @@ public class Minion {
     private int level;
     private Location location;
     private int storedAmount;
+    private boolean hasFuel;
 
     public Minion(UUID minionId, UUID ownerUUID, String type, int level, Location location) {
         this.minionId = minionId;
@@ -20,6 +21,7 @@ public class Minion {
         this.level = level;
         this.location = location;
         this.storedAmount = 0;
+        this.hasFuel = false;
     }
 
     public UUID getMinionId() { return minionId; }
@@ -33,4 +35,7 @@ public class Minion {
     public int getStoredAmount() { return storedAmount; }
     public void setStoredAmount(int storedAmount) { this.storedAmount = storedAmount; }
     public void addStoredAmount(int amount) { this.storedAmount += amount; }
+
+    public boolean hasFuel() { return hasFuel; }
+    public void setHasFuel(boolean hasFuel) { this.hasFuel = hasFuel; }
 }
