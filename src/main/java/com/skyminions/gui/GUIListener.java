@@ -56,6 +56,7 @@ public class GUIListener implements Listener {
 
             int slot = event.getSlot();
             switch (slot) {
+                // Collect All Items
                 case 48 -> {
                     if (targetMinion != null && targetMinion.getStoredAmount() > 0) {
                         Material resourceMat = getResourceMaterial(targetMinion.getType());
@@ -68,6 +69,13 @@ public class GUIListener implements Listener {
                         player.sendMessage(Component.text("No items to collect!", NamedTextColor.RED));
                     }
                 }
+                // Upgrade Minion Tier
+                case 50 -> {
+                    if (targetMinion != null) {
+                        upgradeMinion(player, targetMinion);
+                    }
+                }
+                // Pickup Minion
                 case 52 -> {
                     player.closeInventory();
                     for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
@@ -85,6 +93,36 @@ public class GUIListener implements Listener {
         }
     }
 
+    private void upgradeMinion(Player player, Minion minion) {
+        if (minion.getLevel() >= 11) {
+            player.sendMessage(Component.text("Minion is already at max level (Lv.11)!", NamedTextColor.RED));
+            return;
+        }
+
+        Material requiredMat = getResourceMaterial(minion.getType());
+        int requiredAmount = minion.getLevel() * 64; // Cost: 64x for Lv.2, 128x for Lv.3, etc.
+
+        if (player.getInventory().containsAtLeast(new ItemStack(requiredMat), requiredAmount)) {
+            player.getInventory().removeItem(new ItemStack(requiredMat, requiredAmount));
+            minion.setLevel(minion.getLevel() + 1);
+
+            // Update Nearby Armor Stand Title
+            for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
+                if (entity instanceof ArmorStand stand) {
+                    Component customName = Component.text(minion.getType() + " Minion ", NamedTextColor.AQUA)
+                            .append(Component.text("[Lv." + minion.getLevel() + "]", NamedTextColor.GRAY));
+                    stand.customName(customName);
+                    break;
+                }
+            }
+
+            player.sendMessage(Component.text("Upgraded " + minion.getType() + " Minion to Level " + minion.getLevel() + "!", NamedTextColor.GREEN));
+            plugin.getGuiManager().openMainMenu(player, minion);
+        } else {
+            player.sendMessage(Component.text("You need " + requiredAmount + "x " + requiredMat.name() + " to upgrade!", NamedTextColor.RED));
+        }
+    }
+
     private void buyMinion(Player player, String type) {
         ItemStack minionItem = ItemUtil.createMinionItem(type, 1);
         player.getInventory().addItem(minionItem);
@@ -99,5 +137,5 @@ public class GUIListener implements Listener {
             default -> Material.COBBLESTONE;
         };
     }
-    }
-        
+        }
+                            
