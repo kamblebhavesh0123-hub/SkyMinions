@@ -2,9 +2,8 @@ package com.skyminions.tasks;
 
 import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class MinionTask extends BukkitRunnable {
@@ -18,28 +17,25 @@ public class MinionTask extends BukkitRunnable {
     @Override
     public void run() {
         for (Minion minion : plugin.getMinionManager().getAllMinions()) {
-            processMinionWork(minion);
-        }
-    }
+            if (minion.getLocation() != null && minion.getLocation().getWorld() != null) {
+                // Max storage limit (Hypixel style storage cap, e.g., 960 items for 15 stacks)
+                int maxCapacity = minion.getLevel() * 128;
+                if (minion.getStoredAmount() < maxCapacity) {
+                    minion.addStoredAmount(1);
 
-    private void processMinionWork(Minion minion) {
-        Location loc = minion.getLocation();
-        if (loc == null || loc.getWorld() == null) return;
-
-        Block targetBlock = loc.clone().add(0, -1, 0).getBlock();
-
-        // Core work logic based on minion type
-        if (minion.getType().equalsIgnoreCase("MINING")) {
-            if (targetBlock.getType() == Material.AIR) {
-                targetBlock.setType(Material.COBBLESTONE);
-            }
-        } else if (minion.getType().equalsIgnoreCase("FARMING")) {
-            if (targetBlock.getType() == Material.DIRT || targetBlock.getType() == Material.FARMLAND) {
-                Block cropBlock = loc.getBlock();
-                if (cropBlock.getType() == Material.AIR) {
-                    cropBlock.setType(Material.WHEAT);
+                    // Work animation & sound
+                    minion.getLocation().getWorld().spawnParticle(
+                            Particle.HAPPY_VILLAGER,
+                            minion.getLocation().clone().add(0, 1.2, 0),
+                            3, 0.2, 0.2, 0.2
+                    );
+                    minion.getLocation().getWorld().playSound(
+                            minion.getLocation(),
+                            Sound.BLOCK_STONE_BREAK,
+                            0.5f, 1.2f
+                    );
                 }
             }
         }
     }
-                   }
+}
