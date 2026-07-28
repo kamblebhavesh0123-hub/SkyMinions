@@ -24,7 +24,11 @@ public class Minion {
     }
 
     public UUID getMinionId() { return minionId; }
+    
+    // Both getter methods provided for full compatibility across managers
     public UUID getOwnerId() { return ownerId; }
+    public UUID getOwnerUUID() { return ownerId; }
+
     public String getType() { return type; }
     public int getLevel() { return level; }
     public void setLevel(int level) { 
@@ -58,4 +62,4 @@ public class Minion {
 
     public boolean hasFuel() { return hasFuel; }
     public void setHasFuel(boolean hasFuel) { this.hasFuel = hasFuel; }
-    }
+}
