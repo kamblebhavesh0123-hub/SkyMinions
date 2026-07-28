@@ -89,5 +89,5 @@ public class MinionManager {
             plugin.getLogger().severe("Could not save minions_data.yml!");
         }
     }
-                         }
-          
+        }
+        
