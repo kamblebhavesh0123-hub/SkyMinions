@@ -54,11 +54,30 @@ public class GUIListener implements Listener {
                 }
             }
 
+            if (targetMinion == null) return;
+
             int slot = event.getSlot();
             switch (slot) {
+                // Fuel Slot Toggle
+                case 19 -> {
+                    if (targetMinion.hasFuel()) {
+                        targetMinion.setHasFuel(false);
+                        player.getInventory().addItem(new ItemStack(Material.COAL, 1));
+                        player.sendMessage(Component.text("Removed fuel from minion!", NamedTextColor.YELLOW));
+                    } else {
+                        if (player.getInventory().containsAtLeast(new ItemStack(Material.COAL), 1)) {
+                            player.getInventory().removeItem(new ItemStack(Material.COAL, 1));
+                            targetMinion.setHasFuel(true);
+                            player.sendMessage(Component.text("Inserted Coal into fuel slot (+100% Speed)!", NamedTextColor.GREEN));
+                        } else {
+                            player.sendMessage(Component.text("You need Coal in your inventory to use as fuel!", NamedTextColor.RED));
+                        }
+                    }
+                    plugin.getGuiManager().openMainMenu(player, targetMinion);
+                }
                 // Collect All Items
                 case 48 -> {
-                    if (targetMinion != null && targetMinion.getStoredAmount() > 0) {
+                    if (targetMinion.getStoredAmount() > 0) {
                         Material resourceMat = getResourceMaterial(targetMinion.getType());
                         int amount = targetMinion.getStoredAmount();
                         player.getInventory().addItem(new ItemStack(resourceMat, amount));
@@ -70,11 +89,7 @@ public class GUIListener implements Listener {
                     }
                 }
                 // Upgrade Minion Tier
-                case 50 -> {
-                    if (targetMinion != null) {
-                        upgradeMinion(player, targetMinion);
-                    }
-                }
+                case 50 -> upgradeMinion(player, targetMinion);
                 // Pickup Minion
                 case 52 -> {
                     player.closeInventory();
@@ -84,9 +99,7 @@ public class GUIListener implements Listener {
                             break;
                         }
                     }
-                    if (targetMinion != null) {
-                        plugin.getMinionManager().removeMinion(targetMinion.getMinionId());
-                    }
+                    plugin.getMinionManager().removeMinion(targetMinion.getMinionId());
                     player.sendMessage(Component.text("Minion picked up successfully!", NamedTextColor.YELLOW));
                 }
             }
@@ -100,13 +113,12 @@ public class GUIListener implements Listener {
         }
 
         Material requiredMat = getResourceMaterial(minion.getType());
-        int requiredAmount = minion.getLevel() * 64; // Cost: 64x for Lv.2, 128x for Lv.3, etc.
+        int requiredAmount = minion.getLevel() * 64;
 
         if (player.getInventory().containsAtLeast(new ItemStack(requiredMat), requiredAmount)) {
             player.getInventory().removeItem(new ItemStack(requiredMat, requiredAmount));
             minion.setLevel(minion.getLevel() + 1);
 
-            // Update Nearby Armor Stand Title
             for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
                 if (entity instanceof ArmorStand stand) {
                     Component customName = Component.text(minion.getType() + " Minion ", NamedTextColor.AQUA)
@@ -137,5 +149,5 @@ public class GUIListener implements Listener {
             default -> Material.COBBLESTONE;
         };
     }
-        }
-                            
+                }
+                    
