@@ -43,7 +43,7 @@ public class MinionEntity {
         SkyMinionsPlugin plugin = SkyMinionsPlugin.getPlugin(SkyMinionsPlugin.class);
         MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
 
-        // Set Head Texture
+        // Set Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         if (config != null && config.getHeadTexture() != null && !config.getHeadTexture().isEmpty()) {
             SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -60,7 +60,7 @@ public class MinionEntity {
         }
         stand.getEquipment().setHelmet(head);
 
-        // Set Leather Armor
+        // Set Chestplate
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta armorMeta = (LeatherArmorMeta) chestplate.getItemMeta();
         if (armorMeta != null && config != null && config.getChestplateColor() != null) {
@@ -74,7 +74,7 @@ public class MinionEntity {
         if (toolMat == null && config != null) toolMat = config.getHeldItemFallback();
         stand.getEquipment().setItemInMainHand(new ItemStack(toolMat != null ? toolMat : Material.DIAMOND_PICKAXE));
 
-        // Set Live Name Tag
+        // Update Name Tag
         updateNameTag(minion, stand);
 
         return stand;
@@ -114,10 +114,10 @@ public class MinionEntity {
         if (loc == null || loc.getWorld() == null) return;
 
         if (success) {
-            loc.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, loc.clone().add(0, 1.2, 0), 5, 0.2, 0.2, 0.2);
+            loc.getWorld().spawnParticle(Particle.COMPOSTER, loc.clone().add(0, 1.2, 0), 5, 0.2, 0.2, 0.2);
         } else {
             loc.getWorld().spawnParticle(Particle.SMOKE, loc.clone().add(0, 1.2, 0), 8, 0.2, 0.2, 0.2);
         }
     }
             }
-            
+    
