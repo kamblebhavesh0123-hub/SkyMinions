@@ -1,0 +1,8 @@
+compactor:
+  recipes:
+    COAL: "COAL_BLOCK"
+    IRON_INGOT: "IRON_BLOCK"
+    GOLD_INGOT: "GOLD_BLOCK"
+    DIAMOND: "DIAMOND_BLOCK"
+    REDSTONE: "REDSTONE_BLOCK"
+    
