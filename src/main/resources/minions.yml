@@ -1,33 +1,32 @@
 minions:
   COBBLESTONE:
-    display-name: "&7Cobblestone Minion"
-    type: "MINING"
-    target-block: "COBBLESTONE"
-    head-texture: "eyJ0ZXh0dXJlcyI6e3siU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzI3NWUxOThlMjhhMGFkN2I1ZTcxZmRkMWRlM2I2YWFjN2I3Yzg1NWYwYjE5NjI1NDBmNDlmYmI5NWViIn19fQ=="
-    default-speed: 14.0
-    default-storage: 64
+    display-name: "&aCobblestone Minion"
+    resource-material: "COBBLESTONE"
+    tool-material: "DIAMOND_PICKAXE"
+    head-texture: "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3"
+    armor-color: "#191919"
+    shop-slot: 10
 
   WHEAT:
-    display-name: "&eWheat Minion"
-    type: "FARMING"
-    target-block: "WHEAT"
-    head-texture: "eyJ0ZXh0dXJlcyI6e3siU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2MzM2I2OTM2OWFhNmI2MGFmMDQ2Mjg2MmI3YmY0NWU2MjA0N2IzNjMwYjFiN2I2YjhhOGFmNWYxODhhYyJ9fX0="
-    default-speed: 12.0
-    default-storage: 64
+    display-name: "&aWheat Minion"
+    resource-material: "WHEAT"
+    tool-material: "DIAMOND_HOE"
+    head-texture: "http://textures.minecraft.net/texture/56aed80db590be8d123d537f0ec4d420f1883ab6858e9949d2cb3782b1"
+    armor-color: "#D4AF37"
+    shop-slot: 12
 
   OAK:
-    display-name: "&6Oak Minion"
-    type: "FORAGING"
-    target-block: "OAK_LOG"
-    head-texture: "eyJ0ZXh0dXJlcyI6e3siU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2I5YTMyOThmNmQ0ZmE1OTI3OTViMzFlYzA2YWFmMTU4MmM2YmI0NmVhM2E3Y2EzY2Q2OGIxNjE2NjA0MCJ9fX0="
-    default-speed: 15.0
-    default-storage: 64
+    display-name: "&aOak Minion"
+    resource-material: "OAK_LOG"
+    tool-material: "DIAMOND_AXE"
+    head-texture: "http://textures.minecraft.net/texture/b0862088f17079f220372df037f5d72f10b7596d1947b74f07a221fdd9523788"
+    armor-color: "#8B4513"
+    shop-slot: 14
 
-  ZOMBIE:
-    display-name: "&2Zombie Minion"
-    type: "COMBAT"
-    target-mob: "ZOMBIE"
-    head-texture: "eyJ0ZXh0dXJlcyI6e3siU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2U4MzlkN2I2YWFiN2M0NWMyM2IxY2M4MmIzNzc0MmE3YzcxODVkNWQ0M2EzNWJkNWY4N2Y1N2RkZmEzIn19fQ=="
-    default-speed: 10.0
-    default-storage: 64
-    
+  DIAMOND:
+    display-name: "&bDiamond Minion"
+    resource-material: "DIAMOND"
+    tool-material: "DIAMOND_PICKAXE"
+    head-texture: "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3"
+    armor-color: "#00FFFF"
+    shop-slot: 16
