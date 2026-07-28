@@ -60,6 +60,25 @@ public class GUIListener implements Listener {
 
             int slot = event.getSlot();
             switch (slot) {
+                // Auto Smelter (Slot 10)
+                case 10 -> {
+                    if (targetMinion.hasSmelter()) {
+                        targetMinion.setHasSmelter(false);
+                        player.getInventory().addItem(new ItemStack(Material.FURNACE, 1));
+                        player.sendMessage(Component.text("Removed Auto-Smelter!", NamedTextColor.YELLOW));
+                    } else {
+                        if (player.getInventory().containsAtLeast(new ItemStack(Material.FURNACE), 1)) {
+                            player.getInventory().removeItem(new ItemStack(Material.FURNACE, 1));
+                            targetMinion.setHasSmelter(true);
+                            player.sendMessage(Component.text("Inserted Auto-Smelter!", NamedTextColor.GREEN));
+                        } else {
+                            player.sendMessage(Component.text("You need a Furnace in inventory to use Auto-Smelter!", NamedTextColor.RED));
+                        }
+                    }
+                    plugin.getGuiManager().openMainMenu(player, targetMinion);
+                }
+
+                // Fuel Slot (Slot 19)
                 case 19 -> {
                     if (targetMinion.hasFuel()) {
                         targetMinion.setHasFuel(false);
@@ -76,20 +95,65 @@ public class GUIListener implements Listener {
                     }
                     plugin.getGuiManager().openMainMenu(player, targetMinion);
                 }
+
+                // Compactor Slot (Slot 28)
+                case 28 -> {
+                    if (targetMinion.hasCompactor()) {
+                        targetMinion.setHasCompactor(false);
+                        player.getInventory().addItem(new ItemStack(Material.PISTON, 1));
+                        player.sendMessage(Component.text("Removed Auto-Compactor!", NamedTextColor.YELLOW));
+                    } else {
+                        if (player.getInventory().containsAtLeast(new ItemStack(Material.PISTON), 1)) {
+                            player.getInventory().removeItem(new ItemStack(Material.PISTON, 1));
+                            targetMinion.setHasCompactor(true);
+                            player.sendMessage(Component.text("Inserted Auto-Compactor!", NamedTextColor.GREEN));
+                        } else {
+                            player.sendMessage(Component.text("You need a Piston in inventory to use Compactor!", NamedTextColor.RED));
+                        }
+                    }
+                    plugin.getGuiManager().openMainMenu(player, targetMinion);
+                }
+
+                // Collect All Items (Slot 48)
                 case 48 -> {
                     if (targetMinion.getStoredAmount() > 0) {
                         MinionConfig config = plugin.getConfigManager().getMinionConfig(targetMinion.getType());
-                        Material resourceMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
-                        int amount = targetMinion.getStoredAmount();
-                        player.getInventory().addItem(new ItemStack(resourceMat, amount));
-                        targetMinion.setStoredAmount(0);
-                        player.sendMessage(Component.text("Collected " + amount + " resources!", NamedTextColor.GREEN));
+                        Material baseMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
+                        int stored = targetMinion.getStoredAmount();
+
+                        Material giveMat = baseMat;
+                        int giveAmount = stored;
+
+                        if (targetMinion.hasSmelter()) {
+                            if (baseMat == Material.COBBLESTONE) giveMat = Material.STONE;
+                            else if (baseMat == Material.RAW_IRON) giveMat = Material.IRON_INGOT;
+                            else if (baseMat == Material.RAW_GOLD) giveMat = Material.GOLD_INGOT;
+                        }
+
+                        if (targetMinion.hasCompactor() && stored >= 9) {
+                            giveAmount = stored / 9;
+                            if (giveMat == Material.STONE) giveMat = Material.STONE_BRICKS;
+                            else if (giveMat == Material.WHEAT) giveMat = Material.HAY_BLOCK;
+                            else if (giveMat == Material.COAL) giveMat = Material.COAL_BLOCK;
+                            else if (giveMat == Material.REDSTONE) giveMat = Material.REDSTONE_BLOCK;
+                            else if (giveMat == Material.DIAMOND) giveMat = Material.DIAMOND_BLOCK;
+
+                            // Leftover uncompacted items remain stored
+                            targetMinion.setStoredAmount(stored % 9);
+                        } else {
+                            targetMinion.setStoredAmount(0);
+                        }
+
+                        player.getInventory().addItem(new ItemStack(giveMat, giveAmount));
+                        player.sendMessage(Component.text("Collected " + giveAmount + "x " + giveMat.name() + "!", NamedTextColor.GREEN));
                         plugin.getGuiManager().openMainMenu(player, targetMinion);
                     } else {
                         player.sendMessage(Component.text("No items to collect!", NamedTextColor.RED));
                     }
                 }
+
                 case 50 -> upgradeMinion(player, targetMinion);
+
                 case 52 -> {
                     player.closeInventory();
                     for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
@@ -141,5 +205,5 @@ public class GUIListener implements Listener {
         player.sendMessage(Component.text("Purchased " + type + " Minion Lv.1!", NamedTextColor.GREEN));
         player.closeInventory();
     }
-                            }
-                            
+            }
+                    
