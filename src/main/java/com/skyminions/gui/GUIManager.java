@@ -49,29 +49,34 @@ public class GUIManager {
             gui.setItem(i, border);
         }
 
+        // Top info items
         gui.setItem(4, createGuiItem(Material.REDSTONE_TORCH, 
                 Component.text("Minion Info", NamedTextColor.RED, TextDecoration.BOLD),
-                Component.text("Speed: ", NamedTextColor.GRAY).append(Component.text("14s", NamedTextColor.GREEN))));
+                Component.text("Speed: ", NamedTextColor.GRAY).append(Component.text("14s", NamedTextColor.GREEN)),
+                Component.text("Stored: ", NamedTextColor.GRAY).append(Component.text(minion.getStoredAmount() + " items", NamedTextColor.YELLOW))));
 
         gui.setItem(5, createGuiItem(Material.PLAYER_HEAD, 
                 Component.text(minion.getType() + " Minion", NamedTextColor.AQUA, TextDecoration.BOLD)));
 
-        gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, 
-                Component.text("Auto Sell Slot", NamedTextColor.GREEN, TextDecoration.BOLD)));
+        // Upgrade slots
+        gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Auto Sell Slot", NamedTextColor.GREEN, TextDecoration.BOLD)));
+        gui.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, Component.text("Fuel Slot", NamedTextColor.GOLD, TextDecoration.BOLD)));
+        gui.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, Component.text("Compactor Slot", NamedTextColor.BLUE, TextDecoration.BOLD)));
+        gui.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Upgrade Slot", NamedTextColor.YELLOW, TextDecoration.BOLD)));
 
-        gui.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, 
-                Component.text("Fuel Slot", NamedTextColor.GOLD, TextDecoration.BOLD)));
-
-        gui.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, 
-                Component.text("Compactor Slot", NamedTextColor.BLUE, TextDecoration.BOLD)));
-
-        gui.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, 
-                Component.text("Upgrade Slot", NamedTextColor.YELLOW, TextDecoration.BOLD)));
-
-        ItemStack storageSlot = createGuiItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, Component.text("Empty Storage Slot", NamedTextColor.GRAY));
+        // Render storage grid
         int[] storageSlots = {21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43};
+        int remainingItems = minion.getStoredAmount();
+        Material resourceMat = getResourceMaterial(minion.getType());
+
         for (int slot : storageSlots) {
-            gui.setItem(slot, storageSlot);
+            if (remainingItems > 0) {
+                int stackAmount = Math.min(remainingItems, 64);
+                gui.setItem(slot, new ItemStack(resourceMat, stackAmount));
+                remainingItems -= stackAmount;
+            } else {
+                gui.setItem(slot, createGuiItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, Component.text("Empty Storage Slot", NamedTextColor.GRAY)));
+            }
         }
 
         gui.setItem(48, createGuiItem(Material.CHEST, Component.text("Collect All", NamedTextColor.GREEN, TextDecoration.BOLD)));
@@ -79,6 +84,14 @@ public class GUIManager {
         gui.setItem(52, createGuiItem(Material.BEDROCK, Component.text("Pickup Minion", NamedTextColor.RED, TextDecoration.BOLD)));
 
         player.openInventory(gui);
+    }
+
+    private Material getResourceMaterial(String type) {
+        return switch (type.toUpperCase()) {
+            case "WHEAT" -> Material.WHEAT;
+            case "OAK" -> Material.OAK_LOG;
+            default -> Material.COBBLESTONE;
+        };
     }
 
     private ItemStack createGuiItem(Material material, Component name, Component... lore) {
@@ -98,5 +111,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-                                     }
-            
+            }
+                               
