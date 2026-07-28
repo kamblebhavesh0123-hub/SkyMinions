@@ -1,35 +1,88 @@
-package com.skyminions.managers;
+package com.skyminions.tasks;
 
+import com.skyminions.SkyMinionsPlugin;
+import com.skyminions.api.events.MinionGenerateEvent;
+import com.skyminions.minions.MinionEntity;
 import com.skyminions.models.Minion;
-import org.bukkit.entity.Player;
+import com.skyminions.models.MinionConfig;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class OfflineProductionManager {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    public static void processOfflineProduction(Minion minion, Player owner) {
-        long now = System.currentTimeMillis();
-        long lastActive = minion.getLastActiveTimestamp();
-        long elapsedSeconds = (now - lastActive) / 1000;
+public class MinionTickerTask extends BukkitRunnable {
 
-        if (elapsedSeconds < 10) return;
+    private final SkyMinionsPlugin plugin;
 
-        long baseActionTime = 15; 
-        long actions = (long) (elapsedSeconds / (baseActionTime / minion.getSpeedMultiplier()));
+    public MinionTickerTask(SkyMinionsPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-        if (actions <= 0) return;
+    @Override
+    public void run() {
+        for (Minion minion : plugin.getMinionManager().getAllMinions()) {
+            Location loc = minion.getLocation();
+            if (loc == null || loc.getWorld() == null || !loc.getChunk().isLoaded()) continue;
 
-        int spaceAvailable = minion.getStorage().getCapacity() - minion.getStorage().getStoredAmount();
-        int itemsToProduce = (int) Math.min(actions, spaceAvailable);
+            MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
+            Material targetBlockMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
 
-        if (itemsToProduce > 0) {
-            minion.addStoredAmount(itemsToProduce);
-            minion.incrementItemsGenerated(itemsToProduce);
+            Block targetBlock = loc.clone().add(loc.getDirection().multiply(1.2)).getBlock();
 
-            if (owner != null && owner.isOnline()) {
-                owner.sendMessage("§a[SkyMinions] Your " + minion.getType() + " Minion generated §e" 
-                        + itemsToProduce + " items §awhile you were away!");
+            ArmorStand stand = null;
+            for (Entity entity : loc.getWorld().getNearbyEntities(loc, 1.5, 1.5, 1.5)) {
+                if (entity instanceof ArmorStand armorStand) {
+                    stand = armorStand;
+                    break;
+                }
+            }
+
+            if (minion.getStorage().isFull()) {
+                MinionEntity.playParticleFeedback(loc, false);
+                if (stand != null) {
+                    MinionEntity.updateNameTag(minion, stand);
+                }
+                continue;
+            }
+
+            if (targetBlock.getType() == Material.AIR || targetBlock.getType() == Material.GRASS_BLOCK || targetBlock.getType() == Material.TALL_GRASS) {
+                targetBlock.setType(targetBlockMat);
+                loc.getWorld().playSound(targetBlock.getLocation(), Sound.BLOCK_STONE_PLACE, 0.5f, 1.0f);
+            } else if (targetBlock.getType() == targetBlockMat) {
+                loc.getWorld().spawnParticle(Particle.BLOCK, targetBlock.getLocation().add(0.5, 0.5, 0.5), 10, targetBlockMat.createBlockData());
+                loc.getWorld().playSound(targetBlock.getLocation(), Sound.BLOCK_STONE_BREAK, 0.8f, 1.2f);
+                targetBlock.setType(Material.AIR);
+
+                int amountToProduce = minion.hasFuel() ? 2 : 1;
+                List<ItemStack> drops = new ArrayList<>(Collections.singletonList(new ItemStack(targetBlockMat, amountToProduce)));
+
+                MinionGenerateEvent generateEvent = new MinionGenerateEvent(minion, drops);
+                Bukkit.getPluginManager().callEvent(generateEvent);
+
+                if (!generateEvent.isCancelled()) {
+                    for (ItemStack item : generateEvent.getGeneratedItems()) {
+                        minion.addStoredAmount(item.getAmount());
+                        minion.incrementItemsGenerated(item.getAmount());
+                    }
+
+                    if (stand != null) {
+                        MinionEntity.playCollectAnimation(plugin, stand);
+                        MinionEntity.updateNameTag(minion, stand);
+                    }
+                    MinionEntity.playParticleFeedback(loc, true);
+                }
             }
         }
-
-        minion.setLastActiveTimestamp(now);
     }
-}
+                    }
+        
