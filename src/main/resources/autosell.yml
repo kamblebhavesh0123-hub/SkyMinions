@@ -1,0 +1,10 @@
+autosell:
+  enabled: true
+  multiplier: 1.0
+  prices:
+    COBBLESTONE: 1.0
+    WHEAT: 2.0
+    OAK_LOG: 3.0
+    ROTTEN_FLESH: 2.5
+    DIAMOND: 25.0
+    
