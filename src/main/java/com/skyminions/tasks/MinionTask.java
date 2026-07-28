@@ -51,8 +51,8 @@ public class MinionTask extends BukkitRunnable {
                 continue;
             }
 
-            // Step A: Place block if empty
-            if (targetBlock.getType() == Material.AIR || targetBlock.getType() == Material.SHORT_GRASS || targetBlock.getType() == Material.TALL_GRASS) {
+            // Step A: Place block if empty or grass
+            if (targetBlock.getType() == Material.AIR || targetBlock.getType() == Material.GRASS_BLOCK || targetBlock.getType() == Material.TALL_GRASS) {
                 targetBlock.setType(targetBlockMat);
                 loc.getWorld().playSound(targetBlock.getLocation(), Sound.BLOCK_STONE_PLACE, 0.5f, 1.0f);
             } 
@@ -74,5 +74,4 @@ public class MinionTask extends BukkitRunnable {
             }
         }
     }
-                    }
-                    
+}
