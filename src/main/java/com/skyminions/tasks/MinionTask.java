@@ -27,20 +27,17 @@ public class MinionTask extends BukkitRunnable {
             MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
             Material targetBlockMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
 
-            // Target block directly in front of minion
-            Block targetBlock = loc.clone().add(loc.getDirection().multiply(1.5)).getBlock();
+            // Compute block offset 1 block ahead in facing direction
+            Block targetBlock = loc.clone().add(loc.getDirection().multiply(1.2)).getBlock();
 
             int maxCapacity = minion.getLevel() * 128;
             if (minion.getStoredAmount() < maxCapacity) {
 
-                // Step A: If target space is empty or grass, place target resource block
-                if (targetBlock.getType() == Material.AIR || targetBlock.getType() == Material.GRASS_BLOCK) {
+                if (targetBlock.getType() == Material.AIR || targetBlock.getType() == Material.SHORT_GRASS || targetBlock.getType() == Material.TALL_GRASS) {
                     targetBlock.setType(targetBlockMat);
                     loc.getWorld().playSound(targetBlock.getLocation(), Sound.BLOCK_STONE_PLACE, 0.5f, 1.0f);
-                } 
-                // Step B: Break target resource block & collect resource
-                else if (targetBlock.getType() == targetBlockMat) {
-                    loc.getWorld().spawnParticle(Particle.BLOCK, targetBlock.getLocation().add(0.5, 0.5, 0.5), 15, targetBlockMat.createBlockData());
+                } else if (targetBlock.getType() == targetBlockMat) {
+                    loc.getWorld().spawnParticle(Particle.BLOCK, targetBlock.getLocation().add(0.5, 0.5, 0.5), 10, targetBlockMat.createBlockData());
                     loc.getWorld().playSound(targetBlock.getLocation(), Sound.BLOCK_STONE_BREAK, 0.8f, 1.2f);
                     targetBlock.setType(Material.AIR);
 
@@ -50,5 +47,5 @@ public class MinionTask extends BukkitRunnable {
             }
         }
     }
-    }
-                
+                }
+                                             
