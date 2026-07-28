@@ -14,52 +14,54 @@ import java.util.Map;
 public class MinionConfigManager {
 
     private final SkyMinionsPlugin plugin;
-    private final Map<String, MinionConfig> minionConfigs = new HashMap<>();
+    private final Map<String, MinionConfig> configs = new HashMap<>();
 
     public MinionConfigManager(SkyMinionsPlugin plugin) {
         this.plugin = plugin;
-        loadMinions();
     }
 
-    public void loadMinions() {
-        minionConfigs.clear();
+    public void loadConfigs() {
+        configs.clear();
         File file = new File(plugin.getDataFolder(), "minions.yml");
         if (!file.exists()) {
             plugin.saveResource("minions.yml", false);
         }
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        if (!config.contains("minions")) return;
+        if (config.contains("minions")) {
+            for (String key : config.getConfigurationSection("minions").getKeys(false)) {
+                String path = "minions." + key + ".";
+                String displayName = config.getString(path + "display-name", key + " Minion");
+                
+                Material resourceMat = Material.matchMaterial(config.getString(path + "resource-material", "COBBLESTONE"));
+                Material toolMat = Material.matchMaterial(config.getString(path + "tool-material", "DIAMOND_PICKAXE"));
+                Material fallbackMat = Material.matchMaterial(config.getString(path + "held-item-fallback", "STONE_PICKAXE"));
+                
+                String texture = config.getString(path + "head-texture", "");
+                
+                // Parse Color
+                String colorHex = config.getString(path + "armor-color", "#191919");
+                Color armorColor = Color.fromRGB(0, 150, 255);
+                try {
+                    java.awt.Color awtColor = java.awt.Color.decode(colorHex);
+                    armorColor = Color.fromRGB(awtColor.getRed(), awtColor.getGreen(), awtColor.getBlue());
+                } catch (Exception ignored) {}
 
-        for (String key : config.getConfigurationSection("minions").getKeys(false)) {
-            String path = "minions." + key + ".";
-            String displayName = config.getString(path + "display-name", "&a" + key + " Minion");
-            Material resourceMat = Material.valueOf(config.getString(path + "resource-material", "COBBLESTONE"));
-            Material toolMat = Material.valueOf(config.getString(path + "tool-material", "DIAMOND_PICKAXE"));
-            String headTexture = config.getString(path + "head-texture", "");
-            String colorHex = config.getString(path + "armor-color", "#191919");
-            int shopSlot = config.getInt(path + "shop-slot", 10);
+                int shopSlot = config.getInt(path + "shop-slot", 10);
 
-            Color color = parseHexColor(colorHex);
-            minionConfigs.put(key.toUpperCase(), new MinionConfig(key.toUpperCase(), displayName, resourceMat, toolMat, headTexture, color, shopSlot));
+                MinionConfig minionConfig = new MinionConfig(
+                        key.toUpperCase(), displayName, resourceMat, toolMat, fallbackMat, texture, armorColor, shopSlot
+                );
+                configs.put(key.toUpperCase(), minionConfig);
+            }
         }
     }
 
     public MinionConfig getMinionConfig(String type) {
-        return minionConfigs.get(type.toUpperCase());
+        return configs.get(type.toUpperCase());
     }
 
     public Map<String, MinionConfig> getAllConfigs() {
-        return minionConfigs;
+        return configs;
     }
-
-    private Color parseHexColor(String hex) {
-        try {
-            java.awt.Color javaColor = java.awt.Color.decode(hex);
-            return Color.fromRGB(javaColor.getRed(), javaColor.getGreen(), javaColor.getBlue());
-        } catch (Exception e) {
-            return Color.fromRGB(25, 25, 25);
-        }
-    }
-    }
-          
+}
