@@ -43,6 +43,26 @@ public class GUIManager {
     }
 
     public void openMainMenu(Player player, Minion minion) {
+        // Calculate Offline Earnings
+        long now = System.currentTimeMillis();
+        long timePassedSeconds = (now - minion.getLastCollectedTime()) / 1000;
+        int secondsPerAction = minion.hasFuel() ? 7 : 14;
+        
+        if (timePassedSeconds >= secondsPerAction) {
+            int actionsCount = (int) (timePassedSeconds / secondsPerAction);
+            int itemsProduced = actionsCount * (minion.hasFuel() ? 2 : 1);
+            int maxCapacity = minion.getLevel() * 128;
+
+            int newTotal = Math.min(minion.getStoredAmount() + itemsProduced, maxCapacity);
+            int generatedOffline = newTotal - minion.getStoredAmount();
+
+            if (generatedOffline > 0) {
+                minion.setStoredAmount(newTotal);
+                player.sendMessage(Component.text("While you were away, your minion generated " + generatedOffline + " items!", NamedTextColor.GOLD));
+            }
+            minion.setLastCollectedTime(now);
+        }
+
         MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
         String romanLevel = toRoman(minion.getLevel());
         Component title = Component.text(minion.getType() + " Minion " + romanLevel, NamedTextColor.DARK_GRAY);
@@ -61,7 +81,6 @@ public class GUIManager {
         gui.setItem(5, createGuiItem(Material.PLAYER_HEAD, 
                 Component.text(minion.getType() + " Minion", NamedTextColor.AQUA, TextDecoration.BOLD)));
 
-        // Auto Sell Slot (Slot 10)
         if (minion.hasSmelter()) {
             gui.setItem(10, createGuiItem(Material.FURNACE, 
                     Component.text("Active: Auto-Smelter", NamedTextColor.GREEN, TextDecoration.BOLD),
@@ -73,7 +92,6 @@ public class GUIManager {
                     Component.text("Click with Furnace in inventory to insert!", NamedTextColor.GRAY)));
         }
 
-        // Fuel Slot (Slot 19)
         if (minion.hasFuel()) {
             gui.setItem(19, createGuiItem(Material.COAL, 
                     Component.text("Active Fuel: Coal (+100% Speed)", NamedTextColor.GOLD, TextDecoration.BOLD),
@@ -84,7 +102,6 @@ public class GUIManager {
                     Component.text("Click with Coal in inventory to insert fuel!", NamedTextColor.GRAY)));
         }
 
-        // Compactor Slot (Slot 28)
         if (minion.hasCompactor()) {
             gui.setItem(28, createGuiItem(Material.PISTON, 
                     Component.text("Active: Auto-Compactor", NamedTextColor.BLUE, TextDecoration.BOLD),
@@ -98,7 +115,6 @@ public class GUIManager {
 
         gui.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Upgrade Slot", NamedTextColor.YELLOW, TextDecoration.BOLD)));
 
-        // Render Storage Grid with Smelter & Compactor Overrides
         int[] storageSlots = {21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43};
         int stored = minion.getStoredAmount();
         Material baseMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
@@ -161,5 +177,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-                                     }
-                        
+    }
+                                                                       
