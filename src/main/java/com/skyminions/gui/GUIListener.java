@@ -60,7 +60,6 @@ public class GUIListener implements Listener {
 
             int slot = event.getSlot();
             switch (slot) {
-                // Auto Smelter (Slot 10)
                 case 10 -> {
                     if (targetMinion.hasSmelter()) {
                         targetMinion.setHasSmelter(false);
@@ -78,7 +77,6 @@ public class GUIListener implements Listener {
                     plugin.getGuiManager().openMainMenu(player, targetMinion);
                 }
 
-                // Fuel Slot (Slot 19)
                 case 19 -> {
                     if (targetMinion.hasFuel()) {
                         targetMinion.setHasFuel(false);
@@ -96,7 +94,6 @@ public class GUIListener implements Listener {
                     plugin.getGuiManager().openMainMenu(player, targetMinion);
                 }
 
-                // Compactor Slot (Slot 28)
                 case 28 -> {
                     if (targetMinion.hasCompactor()) {
                         targetMinion.setHasCompactor(false);
@@ -114,7 +111,6 @@ public class GUIListener implements Listener {
                     plugin.getGuiManager().openMainMenu(player, targetMinion);
                 }
 
-                // Collect All Items (Slot 48)
                 case 48 -> {
                     if (targetMinion.getStoredAmount() > 0) {
                         MinionConfig config = plugin.getConfigManager().getMinionConfig(targetMinion.getType());
@@ -138,7 +134,6 @@ public class GUIListener implements Listener {
                             else if (giveMat == Material.REDSTONE) giveMat = Material.REDSTONE_BLOCK;
                             else if (giveMat == Material.DIAMOND) giveMat = Material.DIAMOND_BLOCK;
 
-                            // Leftover uncompacted items remain stored
                             targetMinion.setStoredAmount(stored % 9);
                         } else {
                             targetMinion.setStoredAmount(0);
@@ -154,16 +149,22 @@ public class GUIListener implements Listener {
 
                 case 50 -> upgradeMinion(player, targetMinion);
 
+                // Pickup Minion (Bedrock) -> Returns Minion Head Item
                 case 52 -> {
                     player.closeInventory();
-                    for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
+                    for (Entity entity : player.getNearbyEntities(4, 4, 4)) {
                         if (entity instanceof ArmorStand stand && stand.getCustomName() != null) {
                             stand.remove();
                             break;
                         }
                     }
+
+                    // Return Minion Item back to Player Inventory
+                    ItemStack minionHead = ItemUtil.createMinionItem(targetMinion.getType(), targetMinion.getLevel());
+                    player.getInventory().addItem(minionHead);
+
                     plugin.getMinionManager().removeMinion(targetMinion.getMinionId());
-                    player.sendMessage(Component.text("Minion picked up successfully!", NamedTextColor.YELLOW));
+                    player.sendMessage(Component.text("Picked up " + targetMinion.getType() + " Minion Lv." + targetMinion.getLevel() + "!", NamedTextColor.YELLOW));
                 }
             }
         }
@@ -183,7 +184,7 @@ public class GUIListener implements Listener {
             player.getInventory().removeItem(new ItemStack(requiredMat, requiredAmount));
             minion.setLevel(minion.getLevel() + 1);
 
-            for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
+            for (Entity entity : player.getNearbyEntities(4, 4, 4)) {
                 if (entity instanceof ArmorStand stand) {
                     Component customName = Component.text(minion.getType() + " Minion ", NamedTextColor.AQUA)
                             .append(Component.text("[Lv." + minion.getLevel() + "]", NamedTextColor.GRAY));
@@ -205,5 +206,5 @@ public class GUIListener implements Listener {
         player.sendMessage(Component.text("Purchased " + type + " Minion Lv.1!", NamedTextColor.GREEN));
         player.closeInventory();
     }
-            }
-                    
+                                }
+                            
