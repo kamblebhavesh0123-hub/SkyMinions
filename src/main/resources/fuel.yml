@@ -1,0 +1,14 @@
+fuels:
+  COAL:
+    display-name: "&8Coal Fuel"
+    speed-multiplier: 1.05
+    duration-seconds: 1800
+  ENCHANTED_COAL:
+    display-name: "&5Enchanted Coal"
+    speed-multiplier: 1.10
+    duration-seconds: 86400
+  SOLAR_PANEL:
+    display-name: "&bSolar Panel"
+    speed-multiplier: 1.25
+    duration-seconds: -1 # Permanent
+    
