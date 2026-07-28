@@ -1,0 +1,5 @@
+storage:
+  auto-collect: true
+  overflow-to-chest: true
+  virtual-storage: true
+  
