@@ -33,7 +33,6 @@ public class GUIManager {
             gui.setItem(i, border);
         }
 
-        // Dynamically add all configured minions into the shop
         for (MinionConfig minionConfig : plugin.getConfigManager().getAllConfigs().values()) {
             if (minionConfig.getShopSlot() >= 0 && minionConfig.getShopSlot() < 27) {
                 gui.setItem(minionConfig.getShopSlot(), ItemUtil.createMinionItem(minionConfig.getType(), 1));
@@ -62,8 +61,19 @@ public class GUIManager {
         gui.setItem(5, createGuiItem(Material.PLAYER_HEAD, 
                 Component.text(minion.getType() + " Minion", NamedTextColor.AQUA, TextDecoration.BOLD)));
 
-        gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Auto Sell Slot", NamedTextColor.GREEN, TextDecoration.BOLD)));
+        // Auto Sell Slot (Slot 10)
+        if (minion.hasSmelter()) {
+            gui.setItem(10, createGuiItem(Material.FURNACE, 
+                    Component.text("Active: Auto-Smelter", NamedTextColor.GREEN, TextDecoration.BOLD),
+                    Component.text("Smelts ores & cobble directly!", NamedTextColor.GRAY),
+                    Component.text("Click to remove.", NamedTextColor.RED)));
+        } else {
+            gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, 
+                    Component.text("Auto-Smelter Slot", NamedTextColor.GREEN, TextDecoration.BOLD),
+                    Component.text("Click with Furnace in inventory to insert!", NamedTextColor.GRAY)));
+        }
 
+        // Fuel Slot (Slot 19)
         if (minion.hasFuel()) {
             gui.setItem(19, createGuiItem(Material.COAL, 
                     Component.text("Active Fuel: Coal (+100% Speed)", NamedTextColor.GOLD, TextDecoration.BOLD),
@@ -74,18 +84,33 @@ public class GUIManager {
                     Component.text("Click with Coal in inventory to insert fuel!", NamedTextColor.GRAY)));
         }
 
-        gui.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, Component.text("Compactor Slot", NamedTextColor.BLUE, TextDecoration.BOLD)));
+        // Compactor Slot (Slot 28)
+        if (minion.hasCompactor()) {
+            gui.setItem(28, createGuiItem(Material.PISTON, 
+                    Component.text("Active: Auto-Compactor", NamedTextColor.BLUE, TextDecoration.BOLD),
+                    Component.text("Compresses items into blocks!", NamedTextColor.GRAY),
+                    Component.text("Click to remove.", NamedTextColor.RED)));
+        } else {
+            gui.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, 
+                    Component.text("Compactor Slot", NamedTextColor.BLUE, TextDecoration.BOLD),
+                    Component.text("Click with Piston in inventory to insert!", NamedTextColor.GRAY)));
+        }
+
         gui.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Upgrade Slot", NamedTextColor.YELLOW, TextDecoration.BOLD)));
 
+        // Render Storage Grid with Smelter & Compactor Overrides
         int[] storageSlots = {21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43};
-        int remainingItems = minion.getStoredAmount();
-        Material resourceMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
+        int stored = minion.getStoredAmount();
+        Material baseMat = config != null ? config.getResourceMaterial() : Material.COBBLESTONE;
+        Material displayMat = getProcessedMaterial(baseMat, minion.hasSmelter(), minion.hasCompactor(), stored);
+
+        int renderAmount = minion.hasCompactor() && stored >= 9 ? stored / 9 : stored;
 
         for (int slot : storageSlots) {
-            if (remainingItems > 0) {
-                int stackAmount = Math.min(remainingItems, 64);
-                gui.setItem(slot, new ItemStack(resourceMat, stackAmount));
-                remainingItems -= stackAmount;
+            if (renderAmount > 0) {
+                int stackAmount = Math.min(renderAmount, 64);
+                gui.setItem(slot, new ItemStack(displayMat, stackAmount));
+                renderAmount -= stackAmount;
             } else {
                 gui.setItem(slot, createGuiItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, Component.text("Empty Storage Slot", NamedTextColor.GRAY)));
             }
@@ -96,6 +121,27 @@ public class GUIManager {
         gui.setItem(52, createGuiItem(Material.BEDROCK, Component.text("Pickup Minion", NamedTextColor.RED, TextDecoration.BOLD)));
 
         player.openInventory(gui);
+    }
+
+    private Material getProcessedMaterial(Material baseMat, boolean smelter, boolean compactor, int stored) {
+        Material mat = baseMat;
+
+        if (smelter) {
+            if (mat == Material.COBBLESTONE) mat = Material.STONE;
+            else if (mat == Material.RAW_IRON) mat = Material.IRON_INGOT;
+            else if (mat == Material.RAW_GOLD) mat = Material.GOLD_INGOT;
+        }
+
+        if (compactor && stored >= 9) {
+            if (mat == Material.STONE) mat = Material.STONE_BRICKS;
+            else if (mat == Material.COBBLESTONE) mat = Material.COBBLESTONE;
+            else if (mat == Material.WHEAT) mat = Material.HAY_BLOCK;
+            else if (mat == Material.COAL) mat = Material.COAL_BLOCK;
+            else if (mat == Material.REDSTONE) mat = Material.REDSTONE_BLOCK;
+            else if (mat == Material.DIAMOND) mat = Material.DIAMOND_BLOCK;
+        }
+
+        return mat;
     }
 
     private ItemStack createGuiItem(Material material, Component name, Component... lore) {
@@ -115,5 +161,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-                                      }
-                               
+                                     }
+                        
