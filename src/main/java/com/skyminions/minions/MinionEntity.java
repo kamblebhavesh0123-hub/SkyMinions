@@ -1,8 +1,8 @@
 package com.skyminions.minions;
 
-import com.skyminions.SkyMinionsPlugin;
 import com.skyminions.models.Minion;
 import com.skyminions.models.MinionConfig;
+import com.skyminions.SkyMinionsPlugin;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -11,7 +11,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -28,53 +27,52 @@ public class MinionEntity {
         Location loc = minion.getLocation();
         if (loc == null || loc.getWorld() == null) return null;
 
-        SkyMinionsPlugin plugin = SkyMinionsPlugin.getPlugin(SkyMinionsPlugin.class);
-        MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
-
         ArmorStand stand = (ArmorStand) loc.getWorld().spawnEntity(loc, EntityType.ARMOR_STAND);
-        stand.setGravity(false);
+        stand.setSmall(true);
         stand.setArms(true);
         stand.setBasePlate(false);
-        stand.setSmall(true);
+        stand.setGravity(false);
+        stand.setCanPickupItems(false);
         stand.setCustomNameVisible(true);
+        stand.setInvulnerable(true);
+        stand.setPersistent(true);
 
         Component customName = Component.text(minion.getType() + " Minion ", NamedTextColor.AQUA)
                 .append(Component.text("[Lv." + minion.getLevel() + "]", NamedTextColor.GRAY));
         stand.customName(customName);
 
+        MinionConfig config = SkyMinionsPlugin.getInstance().getConfigManager().getMinionConfig(minion.getType());
+
+        // Set Head
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
-        if (headMeta != null) {
-            String url = (config != null && !config.getHeadTexture().isEmpty()) 
-                    ? config.getHeadTexture() 
-                    : "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3";
-            setSkullTexture(headMeta, url);
-            head.setItemMeta(headMeta);
+        if (config != null && config.getHeadTexture() != null && !config.getHeadTexture().isEmpty()) {
+            SkullMeta meta = (SkullMeta) head.getItemMeta();
+            if (meta != null) {
+                PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+                PlayerTextures textures = profile.getTextures();
+                try {
+                    textures.setSkin(new URL(config.getHeadTexture()));
+                } catch (MalformedURLException ignored) {}
+                profile.setTextures(textures);
+                meta.setOwnerProfile(profile);
+                head.setItemMeta(meta);
+            }
         }
-        stand.setItem(EquipmentSlot.HEAD, head);
+        stand.getEquipment().setHelmet(head);
 
-        ItemStack chest = new ItemStack(Material.LEATHER_CHESTPLATE);
-        LeatherArmorMeta chestMeta = (LeatherArmorMeta) chest.getItemMeta();
-        if (chestMeta != null) {
-            chestMeta.setColor(config != null ? config.getArmorColor() : Color.fromRGB(25, 25, 25));
-            chest.setItemMeta(chestMeta);
+        // Set Chestplate
+        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
+        LeatherArmorMeta armorMeta = (LeatherArmorMeta) chestplate.getItemMeta();
+        if (armorMeta != null) {
+            armorMeta.setColor(Color.fromRGB(0, 150, 255));
+            chestplate.setItemMeta(armorMeta);
         }
-        stand.setItem(EquipmentSlot.CHEST, chest);
+        stand.getEquipment().setChestplate(chestplate);
 
+        // Set Tool
         Material toolMat = config != null ? config.getToolMaterial() : Material.DIAMOND_PICKAXE;
-        stand.setItem(EquipmentSlot.HAND, new ItemStack(toolMat));
+        stand.getEquipment().setItemInMainHand(new ItemStack(toolMat));
 
         return stand;
     }
-
-    private static void setSkullTexture(SkullMeta meta, String textureUrl) {
-        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
-        PlayerTextures textures = profile.getTextures();
-        try {
-            textures.setSkin(new URL(textureUrl));
-        } catch (MalformedURLException ignored) {}
-        profile.setTextures(textures);
-        meta.setOwnerProfile(profile);
     }
-            }
-                
