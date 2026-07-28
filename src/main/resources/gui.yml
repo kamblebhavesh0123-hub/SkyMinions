@@ -1,0 +1,26 @@
+menus:
+  main:
+    title: "&8Minion Overview"
+    size: 54
+    items:
+      storage:
+        slot: 21
+        material: "CHEST"
+        name: "&aCollect Items"
+      upgrades:
+        slot: 23
+        material: "ANVIL"
+        name: "&eUpgrade Minion"
+      fuel:
+        slot: 30
+        material: "BLAZE_POWDER"
+        name: "&cAdd Fuel"
+      equipment:
+        slot: 32
+        material: "DIAMOND_PICKAXE"
+        name: "&bMinion Equipment"
+      pickup:
+        slot: 49
+        material: "BEDROCK"
+        name: "&cPick Up Minion"
+        
