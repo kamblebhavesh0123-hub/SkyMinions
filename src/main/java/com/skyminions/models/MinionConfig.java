@@ -33,4 +33,4 @@ public class MinionConfig {
     public String getHeadTexture() { return headTexture; }
     public Color getChestplateColor() { return chestplateColor; }
     public int getShopSlot() { return shopSlot; }
-}
+    }
