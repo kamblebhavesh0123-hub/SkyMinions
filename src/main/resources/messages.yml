@@ -1,0 +1,9 @@
+messages:
+  no-permission: "&cYou do not have permission to use this command."
+  plugin-reloaded: "&aSkyMinions configuration reloaded successfully!"
+  minion-placed: "&aMinion placed successfully!"
+  minion-broken: "&eMinion retrieved."
+  minion-limit-reached: "&cYou have reached your maximum minion limit!"
+  inventory-full: "&cMinion storage is full!"
+  fuel-added: "&aFuel added successfully!"
+  
