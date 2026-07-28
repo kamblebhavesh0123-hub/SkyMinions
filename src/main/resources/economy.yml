@@ -1,0 +1,4 @@
+economy:
+  use-vault: true
+  auto-sell-tax: 0.10 # 10% tax on auto-sell
+  
