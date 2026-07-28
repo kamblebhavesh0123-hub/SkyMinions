@@ -1,0 +1,9 @@
+fishing-minion:
+  loot:
+    RAW_FISH:
+      chance: 0.60
+      amount: 1
+    TREASURE:
+      chance: 0.05
+      amount: 1
+      
