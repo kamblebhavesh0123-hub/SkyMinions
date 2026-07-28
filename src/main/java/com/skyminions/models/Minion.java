@@ -15,6 +15,7 @@ public class Minion {
     private boolean hasFuel;
     private boolean hasSmelter;
     private boolean hasCompactor;
+    private long lastCollectedTime;
 
     public Minion(UUID minionId, UUID ownerUUID, String type, int level, Location location) {
         this.minionId = minionId;
@@ -26,6 +27,7 @@ public class Minion {
         this.hasFuel = false;
         this.hasSmelter = false;
         this.hasCompactor = false;
+        this.lastCollectedTime = System.currentTimeMillis();
     }
 
     public UUID getMinionId() { return minionId; }
@@ -48,5 +50,7 @@ public class Minion {
 
     public boolean hasCompactor() { return hasCompactor; }
     public void setHasCompactor(boolean hasCompactor) { this.hasCompactor = hasCompactor; }
-    }
-    
+
+    public long getLastCollectedTime() { return lastCollectedTime; }
+    public void setLastCollectedTime(long lastCollectedTime) { this.lastCollectedTime = lastCollectedTime; }
+}
