@@ -1,0 +1,18 @@
+equipment:
+  AUTO_SMELTER:
+    enabled: true
+    item: "FURNACE"
+    display-name: "&fAuto Smelter"
+  COMPACTOR:
+    enabled: true
+    item: "DROPPER"
+    display-name: "&aCompactor"
+  SUPER_COMPACTOR:
+    enabled: true
+    item: "DISPENSER"
+    display-name: "&bSuper Compactor 3000"
+  DIAMOND_SPREADING:
+    enabled: true
+    item: "DIAMOND"
+    chance: 0.1
+    
