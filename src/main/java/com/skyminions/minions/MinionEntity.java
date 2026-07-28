@@ -41,9 +41,10 @@ public class MinionEntity {
                 .append(Component.text("[Lv." + minion.getLevel() + "]", NamedTextColor.GRAY));
         stand.customName(customName);
 
-        MinionConfig config = SkyMinionsPlugin.getInstance().getConfigManager().getMinionConfig(minion.getType());
+        SkyMinionsPlugin plugin = SkyMinionsPlugin.getPlugin(SkyMinionsPlugin.class);
+        MinionConfig config = plugin.getConfigManager().getMinionConfig(minion.getType());
 
-        // Set Head
+        // Set Head Texture
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         if (config != null && config.getHeadTexture() != null && !config.getHeadTexture().isEmpty()) {
             SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -60,7 +61,7 @@ public class MinionEntity {
         }
         stand.getEquipment().setHelmet(head);
 
-        // Set Chestplate
+        // Set Leather Chestplate
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         LeatherArmorMeta armorMeta = (LeatherArmorMeta) chestplate.getItemMeta();
         if (armorMeta != null) {
@@ -69,10 +70,11 @@ public class MinionEntity {
         }
         stand.getEquipment().setChestplate(chestplate);
 
-        // Set Tool
+        // Set Main Hand Tool
         Material toolMat = config != null ? config.getToolMaterial() : Material.DIAMOND_PICKAXE;
         stand.getEquipment().setItemInMainHand(new ItemStack(toolMat));
 
         return stand;
     }
-    }
+            }
+            
