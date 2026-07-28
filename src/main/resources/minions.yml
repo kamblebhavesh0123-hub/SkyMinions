@@ -3,6 +3,7 @@ minions:
     display-name: "&aCobblestone Minion"
     resource-material: "COBBLESTONE"
     tool-material: "DIAMOND_PICKAXE"
+    held-item-fallback: "STONE_PICKAXE"
     head-texture: "http://textures.minecraft.net/texture/e839d7b6aab7c45c23b1cc82b37742a7c7185d5d43a35bd5f87f57ddfa3"
     armor-color: "#191919"
     shop-slot: 10
@@ -11,6 +12,7 @@ minions:
     display-name: "&aWheat Minion"
     resource-material: "WHEAT"
     tool-material: "DIAMOND_HOE"
+    held-item-fallback: "WOODEN_HOE"
     head-texture: "http://textures.minecraft.net/texture/56aed80db590be8d123d537f0ec4d420f1883ab6858e9949d2cb3782b1"
     armor-color: "#D4AF37"
     shop-slot: 11
@@ -19,6 +21,7 @@ minions:
     display-name: "&aOak Minion"
     resource-material: "OAK_LOG"
     tool-material: "DIAMOND_AXE"
+    held-item-fallback: "IRON_AXE"
     head-texture: "http://textures.minecraft.net/texture/b0862088f17079f220372df037f5d72f10b7596d1947b74f07a221fdd9523788"
     armor-color: "#8B4513"
     shop-slot: 12
@@ -27,6 +30,7 @@ minions:
     display-name: "&bDiamond Minion"
     resource-material: "DIAMOND"
     tool-material: "DIAMOND_PICKAXE"
+    held-item-fallback: "DIAMOND_PICKAXE"
     head-texture: "http://textures.minecraft.net/texture/e05b5cc85d88667b938f3281f62174c1062c954e793a5ef5980a33a3a78bd"
     armor-color: "#00FFFF"
     shop-slot: 13
