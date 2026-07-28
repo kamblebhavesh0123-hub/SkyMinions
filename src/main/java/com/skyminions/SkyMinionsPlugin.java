@@ -1,5 +1,7 @@
 package com.skyminions;
 
+import com.skyminions.commands.MinionCommand;
+import com.skyminions.events.MinionListener;
 import com.skyminions.managers.MinionManager;
 import com.skyminions.tasks.MinionTask;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,7 +23,17 @@ public final class SkyMinionsPlugin extends JavaPlugin {
         this.minionTask = new MinionTask(this);
         this.minionTask.runTaskTimer(this, 60L, 60L);
 
-        getLogger().info("SkyMinions 1.21 core managers and tasks initialized!");
+        // Register Events
+        getServer().getPluginManager().registerEvents(new MinionListener(this), this);
+
+        // Register Command Executor and Tab Completer
+        MinionCommand minionCommand = new MinionCommand(this);
+        if (getCommand("minion") != null) {
+            getCommand("minion").setExecutor(minionCommand);
+            getCommand("minion").setTabCompleter(minionCommand);
+        }
+
+        getLogger().info("SkyMinions 1.21 full core, events, and commands loaded!");
     }
 
     @Override
@@ -42,4 +54,5 @@ public final class SkyMinionsPlugin extends JavaPlugin {
     public MinionManager getMinionManager() {
         return minionManager;
     }
-}
+            }
+    
