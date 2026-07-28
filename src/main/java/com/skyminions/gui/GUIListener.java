@@ -1,12 +1,16 @@
 package com.skyminions.gui;
 
 import com.skyminions.SkyMinionsPlugin;
+import com.skyminions.util.ItemUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class GUIListener implements Listener {
 
@@ -20,27 +24,51 @@ public class GUIListener implements Listener {
     public void onInventoryClick(InventoryClickEvent event) {
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
-        // Check if viewing a SkyMinion menu
         Component title = event.getView().title();
         String plainTitle = title.toString();
 
-        if (plainTitle.contains("Minion")) {
-            event.setCancelled(true); // Stop items from being taken out of GUI
-
+        // 1. Minion Shop Click Handler
+        if (plainTitle.contains("Minion Shop")) {
+            event.setCancelled(true);
             if (event.getCurrentItem() == null) return;
 
             int slot = event.getSlot();
             switch (slot) {
-                case 21 -> player.sendMessage(Component.text("Collected all minion resources!", NamedTextColor.GREEN));
-                case 23 -> player.sendMessage(Component.text("Opening Minion Upgrades...", NamedTextColor.GOLD));
-                case 30 -> player.sendMessage(Component.text("Insert fuel in this slot.", NamedTextColor.RED));
-                case 32 -> player.sendMessage(Component.text("Opening Equipment Settings...", NamedTextColor.AQUA));
-                case 49 -> {
+                case 11 -> buyMinion(player, "COBBLESTONE");
+                case 13 -> buyMinion(player, "WHEAT");
+                case 15 -> buyMinion(player, "OAK");
+            }
+            return;
+        }
+
+        // 2. Main Minion Menu Click Handler
+        if (plainTitle.contains("Minion")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem() == null) return;
+
+            int slot = event.getSlot();
+            switch (slot) {
+                case 48 -> player.sendMessage(Component.text("Collected all minion resources!", NamedTextColor.GREEN));
+                case 50 -> player.sendMessage(Component.text("Opening Minion Upgrades...", NamedTextColor.GOLD));
+                case 52 -> {
                     player.closeInventory();
-                    player.sendMessage(Component.text("Minion picked up!", NamedTextColor.YELLOW));
+                    for (Entity entity : player.getNearbyEntities(3, 3, 3)) {
+                        if (entity instanceof ArmorStand stand && stand.getCustomName() != null) {
+                            stand.remove();
+                            break;
+                        }
+                    }
+                    player.sendMessage(Component.text("Minion picked up successfully!", NamedTextColor.YELLOW));
                 }
             }
         }
     }
+
+    private void buyMinion(Player player, String type) {
+        ItemStack minionItem = ItemUtil.createMinionItem(type, 1);
+        player.getInventory().addItem(minionItem);
+        player.sendMessage(Component.text("Purchased " + type + " Minion Lv.1!", NamedTextColor.GREEN));
+        player.closeInventory();
     }
-  
+                                     }
+                            
