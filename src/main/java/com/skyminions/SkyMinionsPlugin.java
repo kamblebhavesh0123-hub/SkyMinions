@@ -4,6 +4,7 @@ import com.skyminions.commands.MinionCommand;
 import com.skyminions.events.MinionListener;
 import com.skyminions.gui.GUIListener;
 import com.skyminions.gui.GUIManager;
+import com.skyminions.hooks.PluginHooks;
 import com.skyminions.managers.MinionManager;
 import com.skyminions.tasks.MinionTask;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +14,7 @@ public final class SkyMinionsPlugin extends JavaPlugin {
     private static SkyMinionsPlugin instance;
     private MinionManager minionManager;
     private GUIManager guiManager;
+    private PluginHooks pluginHooks;
     private MinionTask minionTask;
 
     @Override
@@ -22,6 +24,7 @@ public final class SkyMinionsPlugin extends JavaPlugin {
 
         this.minionManager = new MinionManager(this);
         this.guiManager = new GUIManager(this);
+        this.pluginHooks = new PluginHooks(this);
 
         // Start background work task (runs every 3 seconds)
         this.minionTask = new MinionTask(this);
@@ -38,7 +41,7 @@ public final class SkyMinionsPlugin extends JavaPlugin {
             getCommand("minion").setTabCompleter(minionCommand);
         }
 
-        getLogger().info("SkyMinions 1.21 full core, GUIs, events, and commands loaded!");
+        getLogger().info("SkyMinions 1.21 full release build ready!");
     }
 
     @Override
@@ -63,4 +66,9 @@ public final class SkyMinionsPlugin extends JavaPlugin {
     public GUIManager getGuiManager() {
         return guiManager;
     }
-}
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
+    }
+            }
+        
