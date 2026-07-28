@@ -1,0 +1,4 @@
+supercompactor:
+  enabled: true
+  requires-custom-items: false
+  
