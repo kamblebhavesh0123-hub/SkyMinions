@@ -18,16 +18,16 @@ public class MinionTask extends BukkitRunnable {
     public void run() {
         for (Minion minion : plugin.getMinionManager().getAllMinions()) {
             if (minion.getLocation() != null && minion.getLocation().getWorld() != null) {
-                // Max storage limit (Hypixel style storage cap, e.g., 960 items for 15 stacks)
                 int maxCapacity = minion.getLevel() * 128;
                 if (minion.getStoredAmount() < maxCapacity) {
-                    minion.addStoredAmount(1);
+                    // Produce 2x resources if fuel is active, otherwise 1
+                    int amountToProduce = minion.hasFuel() ? 2 : 1;
+                    minion.addStoredAmount(amountToProduce);
 
-                    // Work animation & sound
                     minion.getLocation().getWorld().spawnParticle(
                             Particle.HAPPY_VILLAGER,
                             minion.getLocation().clone().add(0, 1.2, 0),
-                            3, 0.2, 0.2, 0.2
+                            minion.hasFuel() ? 8 : 3, 0.2, 0.2, 0.2
                     );
                     minion.getLocation().getWorld().playSound(
                             minion.getLocation(),
@@ -38,4 +38,5 @@ public class MinionTask extends BukkitRunnable {
             }
         }
     }
-}
+                    }
+                        
