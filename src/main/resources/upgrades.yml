@@ -1,0 +1,46 @@
+levels:
+  1:
+    speed: 1.0
+    storage: 64
+    cost: 0
+  2:
+    speed: 0.95
+    storage: 128
+    cost: 500
+  3:
+    speed: 0.90
+    storage: 192
+    cost: 1200
+  4:
+    speed: 0.85
+    storage: 256
+    cost: 2500
+  5:
+    speed: 0.80
+    storage: 320
+    cost: 5000
+  6:
+    speed: 0.75
+    storage: 384
+    cost: 10000
+  7:
+    speed: 0.70
+    storage: 448
+    cost: 20000
+  8:
+    speed: 0.65
+    storage: 512
+    cost: 40000
+  9:
+    speed: 0.60
+    storage: 576
+    cost: 80000
+  10:
+    speed: 0.55
+    storage: 640
+    cost: 150000
+  11:
+    speed: 0.50
+    storage: 960
+    cost: 300000
+    
