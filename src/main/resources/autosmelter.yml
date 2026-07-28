@@ -1,0 +1,7 @@
+autosmelter:
+  recipes:
+    COBBLESTONE: "STONE"
+    IRON_ORE: "IRON_INGOT"
+    GOLD_ORE: "GOLD_INGOT"
+    COPPER_ORE: "COPPER_INGOT"
+    
