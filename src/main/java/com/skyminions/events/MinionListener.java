@@ -1,7 +1,6 @@
 package com.skyminions.events;
 
 import com.skyminions.SkyMinionsPlugin;
-import com.skyminions.minions.MinionEntity;
 import com.skyminions.models.Minion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -11,8 +10,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-
-import java.util.UUID;
 
 public class MinionListener implements Listener {
 
@@ -30,7 +27,7 @@ public class MinionListener implements Listener {
         for (Minion minion : plugin.getMinionManager().getAllMinions()) {
             if (minion.getLocation().distanceSquared(stand.getLocation()) < 1.0) {
                 event.setCancelled(true);
-                player.sendMessage(Component.text("Opening Minion Menu for Level " + minion.getLevel(), NamedTextColor.GREEN));
+                plugin.getGuiManager().openMainMenu(player, minion);
                 return;
             }
         }
@@ -55,5 +52,5 @@ public class MinionListener implements Listener {
             }
         }
     }
-                }
-      
+                    }
+                    
