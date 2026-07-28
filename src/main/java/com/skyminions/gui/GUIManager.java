@@ -49,22 +49,30 @@ public class GUIManager {
             gui.setItem(i, border);
         }
 
-        // Top info items
         gui.setItem(4, createGuiItem(Material.REDSTONE_TORCH, 
                 Component.text("Minion Info", NamedTextColor.RED, TextDecoration.BOLD),
-                Component.text("Speed: ", NamedTextColor.GRAY).append(Component.text("14s", NamedTextColor.GREEN)),
+                Component.text("Speed: ", NamedTextColor.GRAY).append(Component.text(minion.hasFuel() ? "7s (2x Fuel Boost)" : "14s", NamedTextColor.GREEN)),
                 Component.text("Stored: ", NamedTextColor.GRAY).append(Component.text(minion.getStoredAmount() + " items", NamedTextColor.YELLOW))));
 
         gui.setItem(5, createGuiItem(Material.PLAYER_HEAD, 
                 Component.text(minion.getType() + " Minion", NamedTextColor.AQUA, TextDecoration.BOLD)));
 
-        // Upgrade slots
         gui.setItem(10, createGuiItem(Material.LIME_STAINED_GLASS_PANE, Component.text("Auto Sell Slot", NamedTextColor.GREEN, TextDecoration.BOLD)));
-        gui.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, Component.text("Fuel Slot", NamedTextColor.GOLD, TextDecoration.BOLD)));
+
+        // Fuel Slot Status
+        if (minion.hasFuel()) {
+            gui.setItem(19, createGuiItem(Material.COAL, 
+                    Component.text("Active Fuel: Coal (+100% Speed)", NamedTextColor.GOLD, TextDecoration.BOLD),
+                    Component.text("Click to remove fuel.", NamedTextColor.GRAY)));
+        } else {
+            gui.setItem(19, createGuiItem(Material.ORANGE_STAINED_GLASS_PANE, 
+                    Component.text("Fuel Slot", NamedTextColor.GOLD, TextDecoration.BOLD),
+                    Component.text("Click with Coal in inventory to insert fuel!", NamedTextColor.GRAY)));
+        }
+
         gui.setItem(28, createGuiItem(Material.BLUE_STAINED_GLASS_PANE, Component.text("Compactor Slot", NamedTextColor.BLUE, TextDecoration.BOLD)));
         gui.setItem(37, createGuiItem(Material.YELLOW_STAINED_GLASS_PANE, Component.text("Upgrade Slot", NamedTextColor.YELLOW, TextDecoration.BOLD)));
 
-        // Render storage grid
         int[] storageSlots = {21, 22, 23, 24, 25, 30, 31, 32, 33, 34, 39, 40, 41, 42, 43};
         int remainingItems = minion.getStoredAmount();
         Material resourceMat = getResourceMaterial(minion.getType());
@@ -111,5 +119,5 @@ public class GUIManager {
             default -> String.valueOf(number);
         };
     }
-            }
-                               
+                                          }
+    
