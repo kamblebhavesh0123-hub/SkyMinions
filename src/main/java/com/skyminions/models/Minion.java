@@ -13,6 +13,8 @@ public class Minion {
     private Location location;
     private int storedAmount;
     private boolean hasFuel;
+    private boolean hasSmelter;
+    private boolean hasCompactor;
 
     public Minion(UUID minionId, UUID ownerUUID, String type, int level, Location location) {
         this.minionId = minionId;
@@ -22,6 +24,8 @@ public class Minion {
         this.location = location;
         this.storedAmount = 0;
         this.hasFuel = false;
+        this.hasSmelter = false;
+        this.hasCompactor = false;
     }
 
     public UUID getMinionId() { return minionId; }
@@ -38,4 +42,11 @@ public class Minion {
 
     public boolean hasFuel() { return hasFuel; }
     public void setHasFuel(boolean hasFuel) { this.hasFuel = hasFuel; }
-}
+
+    public boolean hasSmelter() { return hasSmelter; }
+    public void setHasSmelter(boolean hasSmelter) { this.hasSmelter = hasSmelter; }
+
+    public boolean hasCompactor() { return hasCompactor; }
+    public void setHasCompactor(boolean hasCompactor) { this.hasCompactor = hasCompactor; }
+    }
+    
