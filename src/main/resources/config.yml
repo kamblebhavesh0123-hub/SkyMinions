@@ -1,0 +1,15 @@
+# SkyMinions Main Configuration
+check-updates: true
+prefix: "&8[&bSkyMinions&8] "
+default-minion-limit: 5
+
+database:
+  type: "YAML" # YAML or SQLITE
+  autosave-interval: 300 # seconds
+
+settings:
+  offline-work: true
+  max-offline-hours: 48
+  enable-particles: true
+  enable-sounds: true
+  
