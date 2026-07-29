@@ -1,0 +1,17 @@
+# SkyMinions Fuel Configuration
+fuels:
+  enchanted_charcoal:
+    name: "&aEnchanted Charcoal"
+    speed-multiplier: 1.20
+    duration-seconds: 86400 # 24 Hours
+
+  foul_flesh:
+    name: "&9Foul Flesh"
+    speed-multiplier: 1.90
+    duration-seconds: 18000 # 5 Hours
+
+  solar_panel:
+    name: "&eSolar Panel"
+    speed-multiplier: 1.25
+    duration-seconds: -1 # Unlimited / Permanent
+    
