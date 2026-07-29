@@ -2,42 +2,55 @@ package com.skyminions;
 
 import com.skyminions.commands.MinionCommand;
 import com.skyminions.config.MinionConfigManager;
-import com.skyminions.events.MinionListener;
-import com.skyminions.gui.GUIListener;
-import com.skyminions.gui.GUIManager;
-import com.skyminions.minions.MinionManager;
-import com.skyminions.tasks.MinionTask;
+import com.skyminions.managers.MinionManager;
+import com.skyminions.tasks.MinionTickerTask;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkyMinionsPlugin extends JavaPlugin {
 
-    private MinionManager minionManager;
-    private GUIManager guiManager;
+    private static SkyMinionsPlugin instance;
     private MinionConfigManager configManager;
+    private MinionManager minionManager;
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
+        instance = this;
 
+        // Configurations & Managers
         this.configManager = new MinionConfigManager(this);
-        this.minionManager = new MinionManager();
-        this.guiManager = new GUIManager(this);
+        this.configManager.loadConfigs();
 
+        this.minionManager = new MinionManager(this);
+
+        // Register Command Executor & Tab Completer
+        MinionCommand minionCommand = new MinionCommand();
         if (getCommand("minion") != null) {
-            MinionCommand minionCommand = new MinionCommand(this);
             getCommand("minion").setExecutor(minionCommand);
             getCommand("minion").setTabCompleter(minionCommand);
         }
 
-        getServer().getPluginManager().registerEvents(new MinionListener(this), this);
-        getServer().getPluginManager().registerEvents(new GUIListener(this), this);
+        // Start Central Scheduler (Runs every 20 ticks = 1 second)
+        new MinionTickerTask(this).runTaskTimer(this, 20L, 20L);
 
-        new MinionTask(this).runTaskTimer(this, 60L, 60L);
-
-        getLogger().info("SkyMinions Plugin Enabled Successfully!");
+        getLogger().info("SkyMinions updated successfully!");
     }
 
-    public MinionManager getMinionManager() { return minionManager; }
-    public GUIManager getGuiManager() { return guiManager; }
-    public MinionConfigManager getConfigManager() { return configManager; }
+    @Override
+    public void onDisable() {
+        if (minionManager != null) {
+            minionManager.saveAllMinions();
+        }
+    }
+
+    public static SkyMinionsPlugin getInstance() { 
+        return instance; 
+    }
+
+    public MinionConfigManager getConfigManager() { 
+        return configManager; 
+    }
+
+    public MinionManager getMinionManager() { 
+        return minionManager; 
+    }
 }
