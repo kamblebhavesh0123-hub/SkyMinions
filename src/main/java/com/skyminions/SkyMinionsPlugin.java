@@ -2,6 +2,7 @@ package com.skyminions;
 
 import com.skyminions.commands.MinionCommand;
 import com.skyminions.config.MinionConfigManager;
+import com.skyminions.events.EquipmentListener;
 import com.skyminions.gui.GUIManager;
 import com.skyminions.managers.MinionManager;
 import com.skyminions.tasks.MinionTickerTask;
@@ -24,6 +25,9 @@ public class SkyMinionsPlugin extends JavaPlugin {
 
         this.minionManager = new MinionManager(this);
         this.guiManager = new GUIManager(this);
+
+        // Register Event Listeners
+        getServer().getPluginManager().registerEvents(new EquipmentListener(), this);
 
         // Register Command Executor & Tab Completer
         MinionCommand minionCommand = new MinionCommand(this);
