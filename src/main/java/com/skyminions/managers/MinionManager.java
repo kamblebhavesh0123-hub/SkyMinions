@@ -24,6 +24,10 @@ public class MinionManager {
     }
 
     public void registerMinion(Minion minion) {
+        addMinion(minion);
+    }
+
+    public void addMinion(Minion minion) {
         activeMinions.put(minion.getMinionId(), minion);
         storageRepository.saveMinion(minion);
     }
@@ -55,4 +59,5 @@ public class MinionManager {
     public StorageRepository getStorageRepository() {
         return storageRepository;
     }
-}
+            }
+    
