@@ -1,5 +1,7 @@
 package com.skyminions.models;
 
+import com.skyminions.models.state.MinionState;
+import com.skyminions.models.state.MinionStateMachine;
 import org.bukkit.Location;
 import java.util.UUID;
 
@@ -11,6 +13,7 @@ public abstract class AbstractMinion {
     protected int level;
     protected Location location;
     protected final MinionStorage storage;
+    protected final MinionStateMachine stateMachine;
     
     protected long lastActiveTimestamp;
     protected long fuelRemainingMillis;
@@ -27,6 +30,7 @@ public abstract class AbstractMinion {
         this.level = level;
         this.location = location;
         this.storage = new MinionStorage(level * 128);
+        this.stateMachine = new MinionStateMachine((Minion) this);
         this.lastActiveTimestamp = System.currentTimeMillis();
     }
 
@@ -47,6 +51,8 @@ public abstract class AbstractMinion {
     public void setLocation(Location location) { this.location = location; }
 
     public MinionStorage getStorage() { return storage; }
+    public MinionStateMachine getStateMachine() { return stateMachine; }
+    public MinionState getState() { return stateMachine.getCurrentState(); }
 
     public long getLastActiveTimestamp() { return lastActiveTimestamp; }
     public void setLastActiveTimestamp(long timestamp) { this.lastActiveTimestamp = timestamp; }
@@ -62,5 +68,4 @@ public abstract class AbstractMinion {
     public void incrementItemsGenerated(long amount) { this.totalItemsGenerated += amount; }
 
     public abstract void tick();
-  }
-                                       
+                                        }
