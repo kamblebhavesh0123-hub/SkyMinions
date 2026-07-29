@@ -1,7 +1,9 @@
 package com.skyminions.managers;
 
 import com.skyminions.SkyMinionsPlugin;
-import com.skyminions.models.fuel.Fuel;
+import com.skyminions.models.Fuel;
+import com.skyminions.models.Minion;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -12,7 +14,7 @@ import java.util.Map;
 public class FuelManager {
 
     private final SkyMinionsPlugin plugin;
-    private final Map<String, Fuel> fuels = new HashMap<>();
+    private final Map<String, Fuel> loadedFuels = new HashMap<>();
 
     public FuelManager(SkyMinionsPlugin plugin) {
         this.plugin = plugin;
@@ -20,29 +22,38 @@ public class FuelManager {
     }
 
     public void loadFuels() {
-        fuels.clear();
-        File file = new File(plugin.getDataFolder(), "fuels.yml");
+        loadedFuels.clear();
+        File file = new File(plugin.getDataFolder(), "fuel.yml");
         if (!file.exists()) {
-            plugin.saveResource("fuels.yml", false);
+            plugin.saveResource("fuel.yml", false);
         }
 
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        if (config.getConfigurationSection("fuels") != null) {
-            for (String key : config.getConfigurationSection("fuels").getKeys(false)) {
-                String name = config.getString("fuels." + key + ".name", key);
-                double speed = config.getDouble("fuels." + key + ".speed-multiplier", 1.25);
-                long duration = config.getLong("fuels." + key + ".duration-seconds", 86400);
+        ConfigurationSection section = config.getConfigurationSection("fuels");
+        if (section == null) return;
 
-                fuels.put(key.toLowerCase(), new Fuel(key, name, speed, duration));
-            }
+        for (String key : section.getKeys(false)) {
+            String name = section.getString(key + ".display-name", key);
+            double speedMultiplier = section.getDouble(key + ".speed-multiplier", 1.0);
+            long duration = section.getLong(key + ".duration-seconds", 3600);
+
+            Fuel fuel = new Fuel(key, name, speedMultiplier, duration);
+            loadedFuels.put(key.toLowerCase(), fuel);
         }
+        plugin.getLogger().info("Loaded " + loadedFuels.size() + " fuel types.");
     }
 
     public Fuel getFuel(String id) {
-        return fuels.get(id.toLowerCase());
+        return loadedFuels.get(id.toLowerCase());
     }
 
-    public Map<String, Fuel> getAllFuels() {
-        return fuels;
+    public void applyFuel(Minion minion, Fuel fuel) {
+        minion.setSpeedMultiplier(fuel.getSpeedMultiplier());
+        minion.setHasFuel(true);
+        plugin.getMinionManager().saveMinions();
     }
-                  }
+
+    public Map<String, Fuel> getLoadedFuels() {
+        return loadedFuels;
+    }
+                               }
