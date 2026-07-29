@@ -1,74 +1,134 @@
 package com.skyminions;
 
 import com.skyminions.commands.MinionCommand;
-import com.skyminions.config.MinionConfigManager;
-import com.skyminions.events.EquipmentListener;
+import com.skyminions.events.MinionListener;
 import com.skyminions.gui.GUIManager;
+import com.skyminions.hooks.PluginHooks;
 import com.skyminions.managers.FuelManager;
+import com.skyminions.managers.HologramManager;
 import com.skyminions.managers.MinionManager;
-import com.skyminions.tasks.MinionTickerTask;
+import com.skyminions.managers.MinionTickerTask;
+import com.skyminions.managers.UpgradeManager;
+import com.skyminions.models.Minion;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkyMinionsPlugin extends JavaPlugin {
 
     private static SkyMinionsPlugin instance;
-    private MinionConfigManager configManager;
     private MinionManager minionManager;
-    private FuelManager fuelManager;
     private GUIManager guiManager;
+    private UpgradeManager upgradeManager;
+    private FuelManager fuelManager;
+    private HologramManager hologramManager;
+    private PluginHooks pluginHooks;
+    private MinionTickerTask tickerTask;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        // Configurations & Managers
-        this.configManager = new MinionConfigManager(this);
-        this.configManager.loadConfigs();
+        saveDefaultConfig();
 
-        this.fuelManager = new FuelManager(this);
+        // Initialize Managers
+        this.pluginHooks = new PluginHooks(this);
         this.minionManager = new MinionManager(this);
         this.guiManager = new GUIManager(this);
+        this.upgradeManager = new UpgradeManager(this);
+        this.fuelManager = new FuelManager(this);
+        this.hologramManager = new HologramManager(this);
 
-        // Register Event Listeners
-        getServer().getPluginManager().registerEvents(new EquipmentListener(), this);
+        // Calculate Offline Production
+        calculateOfflineProduction();
 
-        // Register Command Executor & Tab Completer
-        MinionCommand minionCommand = new MinionCommand(this);
+        // Register Commands & Events
         if (getCommand("minion") != null) {
-            getCommand("minion").setExecutor(minionCommand);
-            getCommand("minion").setTabCompleter(minionCommand);
+            MinionCommand minionCmd = new MinionCommand(this);
+            getCommand("minion").setExecutor(minionCmd);
+            getCommand("minion").setTabCompleter(minionCmd);
         }
 
-        // Start Central Scheduler (Runs every 20 ticks = 1 second)
-        new MinionTickerTask(this).runTaskTimer(this, 20L, 20L);
+        getServer().getPluginManager().registerEvents(new MinionListener(this), this);
 
-        getLogger().info("SkyMinions updated successfully!");
+        // Start High-Performance FSM Ticker Task
+        this.tickerTask = new MinionTickerTask(this);
+        this.tickerTask.runTaskTimer(this, 20L, 20L);
+
+        getLogger().info("SkyMinions v" + getDescription().getVersion() + " successfully enabled!");
     }
 
     @Override
     public void onDisable() {
+        if (tickerTask != null) {
+            tickerTask.cancel();
+        }
+        if (hologramManager != null) {
+            hologramManager.removeAll();
+        }
         if (minionManager != null) {
             minionManager.saveMinions();
         }
+        getLogger().info("SkyMinions successfully disabled.");
     }
 
-    public static SkyMinionsPlugin getInstance() { 
-        return instance; 
+    private void calculateOfflineProduction() {
+        long now = System.currentTimeMillis();
+        int totalGenerated = 0;
+
+        for (Minion minion : minionManager.getAllMinions()) {
+            long lastActive = minion.getLastActiveTimestamp();
+            if (lastActive <= 0) continue;
+
+            long elapsedSeconds = (now - lastActive) / 1000;
+            if (elapsedSeconds < 10) continue; // Skip short offline windows
+
+            // Calculate offline items generated based on speed (assuming 5s base interval)
+            long interval = (long) (5 / minion.getSpeedMultiplier());
+            if (interval < 1) interval = 1;
+
+            int itemsToProduce = (int) (elapsedSeconds / interval);
+            if (itemsToProduce > 0) {
+                int capacity = minion.getStorage().getCapacity();
+                int current = minion.getStoredAmount();
+                int maxCanAdd = capacity - current;
+
+                int actualAdd = Math.min(itemsToProduce, maxCanAdd);
+                minion.setStoredAmount(current + actualAdd);
+                minion.setLastActiveTimestamp(now);
+                totalGenerated += actualAdd;
+            }
+        }
+
+        if (totalGenerated > 0) {
+            getLogger().info("Offline Engine: Calculated " + totalGenerated + " offline items across active minions!");
+        }
     }
 
-    public MinionConfigManager getConfigManager() { 
-        return configManager; 
+    public static SkyMinionsPlugin getInstance() {
+        return instance;
     }
 
-    public MinionManager getMinionManager() { 
-        return minionManager; 
+    public MinionManager getMinionManager() {
+        return minionManager;
+    }
+
+    public GUIManager getGuiManager() {
+        return guiManager;
+    }
+
+    public UpgradeManager getUpgradeManager() {
+        return upgradeManager;
     }
 
     public FuelManager getFuelManager() {
         return fuelManager;
     }
 
-    public GUIManager getGuiManager() {
-        return guiManager;
+    public HologramManager getHologramManager() {
+        return hologramManager;
     }
+
+    public PluginHooks getHooks() {
+        return pluginHooks;
     }
+}
