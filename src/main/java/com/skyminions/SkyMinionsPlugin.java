@@ -7,9 +7,9 @@ import com.skyminions.hooks.PluginHooks;
 import com.skyminions.managers.FuelManager;
 import com.skyminions.managers.HologramManager;
 import com.skyminions.managers.MinionManager;
-import com.skyminions.managers.MinionTickerTask;
 import com.skyminions.managers.UpgradeManager;
 import com.skyminions.models.Minion;
+import com.skyminions.tasks.MinionTickerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -82,7 +82,7 @@ public class SkyMinionsPlugin extends JavaPlugin {
             long elapsedSeconds = (now - lastActive) / 1000;
             if (elapsedSeconds < 10) continue; // Skip short offline windows
 
-            // Calculate offline items generated based on speed (assuming 5s base interval)
+            // Calculate offline items generated based on speed
             long interval = (long) (5 / minion.getSpeedMultiplier());
             if (interval < 1) interval = 1;
 
@@ -131,4 +131,4 @@ public class SkyMinionsPlugin extends JavaPlugin {
     public PluginHooks getHooks() {
         return pluginHooks;
     }
-}
+        }
