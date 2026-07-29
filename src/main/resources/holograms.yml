@@ -1,0 +1,10 @@
+# SkyMinions Hologram Configuration
+hologram:
+  enabled: true
+  height-offset: 1.2
+  lines:
+    - "&e&l{TYPE} MINION"
+    - "&7Tier &a{LEVEL} &7| Owner: &b{OWNER}"
+    - "&7Storage: &e{STORED}/{CAPACITY}"
+    - "{STATUS}"
+    
