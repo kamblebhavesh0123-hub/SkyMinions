@@ -1,6 +1,7 @@
 package com.skyminions.config;
 
 import com.skyminions.SkyMinionsPlugin;
+import com.skyminions.models.MinionConfig;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -15,7 +16,7 @@ public class ConfigManager {
     private File guiConfigFile;
     private FileConfiguration upgradeConfig;
     private File upgradeConfigFile;
-    private final Map<String, FileConfiguration> minionConfigs = new HashMap<>();
+    private final Map<String, MinionConfig> minionConfigs = new HashMap<>();
 
     public ConfigManager(SkyMinionsPlugin plugin) {
         this.plugin = plugin;
@@ -37,7 +38,7 @@ public class ConfigManager {
         }
         upgradeConfig = YamlConfiguration.loadConfiguration(upgradeConfigFile);
 
-        // Load minion-specific configs from minions folder if present
+        // Load minion-specific configs and map them to MinionConfig models
         minionConfigs.clear();
         File minionsDir = new File(plugin.getDataFolder(), "minions");
         if (minionsDir.exists() && minionsDir.isDirectory()) {
@@ -45,7 +46,8 @@ public class ConfigManager {
             if (files != null) {
                 for (File file : files) {
                     String typeName = file.getName().replace(".yml", "").toLowerCase();
-                    minionConfigs.put(typeName, YamlConfiguration.loadConfiguration(file));
+                    FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+                    minionConfigs.put(typeName, new MinionConfig(typeName, cfg));
                 }
             }
         }
@@ -67,14 +69,13 @@ public class ConfigManager {
         return upgradeConfig;
     }
 
-    public FileConfiguration getMinionConfig(String type) {
-        if (type == null) return getMainConfig();
-        FileConfiguration cfg = minionConfigs.get(type.toLowerCase());
-        return cfg != null ? cfg : getMainConfig();
+    public MinionConfig getMinionConfig(String type) {
+        if (type == null) return null;
+        return minionConfigs.get(type.toLowerCase());
     }
 
-    public Map<String, FileConfiguration> getAllConfigs() {
+    public Map<String, MinionConfig> getAllConfigs() {
         return minionConfigs;
     }
-    }
-                                 
+        }
+                
