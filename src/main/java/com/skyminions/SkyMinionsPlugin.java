@@ -4,6 +4,7 @@ import com.skyminions.commands.MinionCommand;
 import com.skyminions.config.MinionConfigManager;
 import com.skyminions.events.EquipmentListener;
 import com.skyminions.gui.GUIManager;
+import com.skyminions.managers.FuelManager;
 import com.skyminions.managers.MinionManager;
 import com.skyminions.tasks.MinionTickerTask;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,6 +14,7 @@ public class SkyMinionsPlugin extends JavaPlugin {
     private static SkyMinionsPlugin instance;
     private MinionConfigManager configManager;
     private MinionManager minionManager;
+    private FuelManager fuelManager;
     private GUIManager guiManager;
 
     @Override
@@ -23,6 +25,7 @@ public class SkyMinionsPlugin extends JavaPlugin {
         this.configManager = new MinionConfigManager(this);
         this.configManager.loadConfigs();
 
+        this.fuelManager = new FuelManager(this);
         this.minionManager = new MinionManager(this);
         this.guiManager = new GUIManager(this);
 
@@ -61,7 +64,11 @@ public class SkyMinionsPlugin extends JavaPlugin {
         return minionManager; 
     }
 
+    public FuelManager getFuelManager() {
+        return fuelManager;
+    }
+
     public GUIManager getGuiManager() {
         return guiManager;
     }
-}
+    }
