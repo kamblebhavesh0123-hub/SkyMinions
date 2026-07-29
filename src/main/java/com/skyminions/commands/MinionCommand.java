@@ -1,6 +1,7 @@
 package com.skyminions.commands;
 
 import com.skyminions.SkyMinionsPlugin;
+import com.skyminions.commands.sub.BenchmarkSubCommand;
 import com.skyminions.commands.sub.GiveSubCommand;
 import com.skyminions.commands.sub.ReloadSubCommand;
 import org.bukkit.command.Command;
@@ -23,6 +24,7 @@ public class MinionCommand implements CommandExecutor, TabCompleter {
         this.plugin = plugin;
         subCommands.put("give", new GiveSubCommand());
         subCommands.put("reload", new ReloadSubCommand());
+        subCommands.put("benchmark", new BenchmarkSubCommand());
     }
 
     public MinionCommand() {
@@ -40,7 +42,7 @@ public class MinionCommand implements CommandExecutor, TabCompleter {
         if (sub != null) {
             sub.execute(sender, args);
         } else {
-            sender.sendMessage("§cUnknown subcommand! Use /minion give or /minion reload.");
+            sender.sendMessage("§cUnknown subcommand! Use /minion give, /minion reload, or /minion benchmark.");
         }
         return true;
     }
@@ -56,5 +58,4 @@ public class MinionCommand implements CommandExecutor, TabCompleter {
         }
         return Collections.emptyList();
     }
-                             }
-                
+                }
