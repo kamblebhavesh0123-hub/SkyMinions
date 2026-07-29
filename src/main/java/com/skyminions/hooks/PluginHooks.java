@@ -8,37 +8,44 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public class PluginHooks {
 
     private final SkyMinionsPlugin plugin;
-    private Economy economy = null;
-    private boolean placeholderApiEnabled = false;
+    private Economy vaultEconomy;
+    private boolean placeholderApiEnabled;
 
     public PluginHooks(SkyMinionsPlugin plugin) {
         this.plugin = plugin;
-        setupEconomy();
+        setupVault();
         setupPlaceholderAPI();
     }
 
-    private void setupEconomy() {
-        if (Bukkit.getPluginManager().getPlugin("Vault") == null) return;
-        RegisteredServiceProvider<Economy> rsp = Bukkit.getServicesManager().getRegistration(Economy.class);
+    private void setupVault() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
+            plugin.getLogger().info("Vault not found. Economy features will be disabled.");
+            return;
+        }
+        RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp != null) {
-            economy = rsp.getProvider();
-            plugin.getLogger().info("Hooked into Vault Economy!");
+            vaultEconomy = rsp.getProvider();
+            plugin.getLogger().info("Successfully hooked into Vault Economy!");
         }
     }
 
     private void setupPlaceholderAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             placeholderApiEnabled = true;
-            plugin.getLogger().info("Hooked into PlaceholderAPI!");
+            new MinionExpansion(plugin).register();
+            plugin.getLogger().info("Successfully hooked into PlaceholderAPI!");
         }
     }
 
-    public Economy getEconomy() {
-        return economy;
+    public Economy getVaultEconomy() {
+        return vaultEconomy;
+    }
+
+    public boolean hasVault() {
+        return vaultEconomy != null;
     }
 
     public boolean isPlaceholderApiEnabled() {
         return placeholderApiEnabled;
     }
-          }
-            
+}
