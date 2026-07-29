@@ -21,15 +21,15 @@ public class UpgradeManager {
 
         double cost = nextLevel * 500.0;
 
-        // Vault Economy Integration check
-        if (plugin.getPluginHooks() != null && plugin.getPluginHooks().hasVault()) {
-            double balance = plugin.getPluginHooks().getVaultEconomy().getBalance(player);
+        // Vault Economy Integration check using getHooks()
+        if (plugin.getHooks() != null && plugin.getHooks().hasVault()) {
+            double balance = plugin.getHooks().getVaultEconomy().getBalance(player);
             if (balance < cost) {
                 player.sendMessage("§cYou don't have enough money! Required: §6$" + cost);
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.0f, 1.0f);
                 return false;
             }
-            plugin.getPluginHooks().getVaultEconomy().withdrawPlayer(player, cost);
+            plugin.getHooks().getVaultEconomy().withdrawPlayer(player, cost);
         }
 
         // Call event
@@ -48,5 +48,4 @@ public class UpgradeManager {
 
         return true;
     }
-                                 }
-          
+    }
