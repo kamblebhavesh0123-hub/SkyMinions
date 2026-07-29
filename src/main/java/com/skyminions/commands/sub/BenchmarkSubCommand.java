@@ -6,6 +6,7 @@ import com.skyminions.models.Minion;
 import com.skyminions.models.state.MinionState;
 import org.bukkit.command.CommandSender;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class BenchmarkSubCommand implements MinionSubCommand {
         }
 
         SkyMinionsPlugin plugin = SkyMinionsPlugin.getInstance();
-        List<Minion> minions = plugin.getMinionManager().getAllMinions();
+        Collection<Minion> minions = plugin.getMinionManager().getAllMinions();
 
         long workingCount = minions.stream().filter(m -> m.getState() == MinionState.WORKING || m.getState() == MinionState.COLLECTING).count();
         long storageFullCount = minions.stream().filter(m -> m.getState() == MinionState.STORAGE_FULL).count();
@@ -42,5 +43,4 @@ public class BenchmarkSubCommand implements MinionSubCommand {
     public List<String> tabComplete(CommandSender sender, String[] args) {
         return Collections.emptyList();
     }
-          }
-          
+                           }
