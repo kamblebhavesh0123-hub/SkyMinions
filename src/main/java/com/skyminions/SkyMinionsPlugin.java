@@ -4,18 +4,19 @@ import com.skyminions.commands.MinionCommand;
 import com.skyminions.events.MinionListener;
 import com.skyminions.gui.GUIManager;
 import com.skyminions.hooks.PluginHooks;
+import com.skyminions.managers.ConfigManager;
 import com.skyminions.managers.FuelManager;
 import com.skyminions.managers.HologramManager;
 import com.skyminions.managers.MinionManager;
 import com.skyminions.managers.UpgradeManager;
 import com.skyminions.models.Minion;
 import com.skyminions.tasks.MinionTickerTask;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkyMinionsPlugin extends JavaPlugin {
 
     private static SkyMinionsPlugin instance;
+    private ConfigManager configManager;
     private MinionManager minionManager;
     private GUIManager guiManager;
     private UpgradeManager upgradeManager;
@@ -30,7 +31,8 @@ public class SkyMinionsPlugin extends JavaPlugin {
 
         saveDefaultConfig();
 
-        // Initialize Managers
+        // Initialize Config & Managers
+        this.configManager = new ConfigManager(this);
         this.pluginHooks = new PluginHooks(this);
         this.minionManager = new MinionManager(this);
         this.guiManager = new GUIManager(this);
@@ -108,6 +110,10 @@ public class SkyMinionsPlugin extends JavaPlugin {
         return instance;
     }
 
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
     public MinionManager getMinionManager() {
         return minionManager;
     }
@@ -131,4 +137,4 @@ public class SkyMinionsPlugin extends JavaPlugin {
     public PluginHooks getHooks() {
         return pluginHooks;
     }
-        }
+}
