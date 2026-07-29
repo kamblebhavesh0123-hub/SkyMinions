@@ -1,14 +1,29 @@
+# SkyMinions Fuel Engine Configuration
 fuels:
-  COAL:
-    display-name: "&8Coal Fuel"
-    speed-multiplier: 1.05
-    duration-seconds: 1800
-  ENCHANTED_COAL:
-    display-name: "&5Enchanted Coal"
-    speed-multiplier: 1.10
-    duration-seconds: 86400
-  SOLAR_PANEL:
-    display-name: "&bSolar Panel"
-    speed-multiplier: 1.25
-    duration-seconds: -1 # Permanent
-    
+  coal_fuel:
+    display-name: "&aEnchanted Coal Fuel"
+    material: "COAL"
+    speed-multiplier: 1.20
+    duration-seconds: 86400 # 24 hours
+    lore:
+      - "&7Increases minion speed by &a+20%"
+      - "&7Duration: &f24 Hours"
+
+  lava_bucket_fuel:
+    display-name: "&cMagma Fuel Cell"
+    material: "LAVA_BUCKET"
+    speed-multiplier: 1.50
+    duration-seconds: 604800 # 7 days
+    lore:
+      - "&7Increases minion speed by &a+50%"
+      - "&7Duration: &f7 Days"
+
+  hyper_fuel:
+    display-name: "&bHyper Catalyst"
+    material: "NETHER_STAR"
+    speed-multiplier: 2.00
+    duration-seconds: -1 # Infinite duration
+    lore:
+      - "&7Increases minion speed by &a+100%"
+      - "&7Duration: &ePERMANENT"
+      
