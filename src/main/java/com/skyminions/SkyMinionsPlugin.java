@@ -1,10 +1,10 @@
 package com.skyminions;
 
 import com.skyminions.commands.MinionCommand;
+import com.skyminions.config.ConfigManager;
 import com.skyminions.events.MinionListener;
 import com.skyminions.gui.GUIManager;
 import com.skyminions.hooks.PluginHooks;
-import com.skyminions.managers.ConfigManager;
 import com.skyminions.managers.FuelManager;
 import com.skyminions.managers.HologramManager;
 import com.skyminions.managers.MinionManager;
