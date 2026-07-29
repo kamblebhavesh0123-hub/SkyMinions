@@ -5,7 +5,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigManager {
 
@@ -14,15 +15,16 @@ public class ConfigManager {
     private File guiConfigFile;
     private FileConfiguration upgradeConfig;
     private File upgradeConfigFile;
+    private final Map<String, FileConfiguration> minionConfigs = new HashMap<>();
 
     public ConfigManager(SkyMinionsPlugin plugin) {
         this.plugin = plugin;
-        reloadConfigs();
+        loadConfigs();
     }
 
-    public void reloadConfigs() {
+    public void loadConfigs() {
         plugin.reloadConfig();
-        
+
         guiConfigFile = new File(plugin.getDataFolder(), "gui.yml");
         if (!guiConfigFile.exists()) {
             plugin.saveResource("gui.yml", false);
@@ -34,6 +36,23 @@ public class ConfigManager {
             plugin.saveResource("upgrades.yml", false);
         }
         upgradeConfig = YamlConfiguration.loadConfiguration(upgradeConfigFile);
+
+        // Load minion-specific configs from minions folder if present
+        minionConfigs.clear();
+        File minionsDir = new File(plugin.getDataFolder(), "minions");
+        if (minionsDir.exists() && minionsDir.isDirectory()) {
+            File[] files = minionsDir.listFiles((dir, name) -> name.endsWith(".yml"));
+            if (files != null) {
+                for (File file : files) {
+                    String typeName = file.getName().replace(".yml", "").toLowerCase();
+                    minionConfigs.put(typeName, YamlConfiguration.loadConfiguration(file));
+                }
+            }
+        }
+    }
+
+    public void reloadConfigs() {
+        loadConfigs();
     }
 
     public FileConfiguration getMainConfig() {
@@ -47,4 +66,15 @@ public class ConfigManager {
     public FileConfiguration getUpgradeConfig() {
         return upgradeConfig;
     }
-}
+
+    public FileConfiguration getMinionConfig(String type) {
+        if (type == null) return getMainConfig();
+        FileConfiguration cfg = minionConfigs.get(type.toLowerCase());
+        return cfg != null ? cfg : getMainConfig();
+    }
+
+    public Map<String, FileConfiguration> getAllConfigs() {
+        return minionConfigs;
+    }
+    }
+                                 
