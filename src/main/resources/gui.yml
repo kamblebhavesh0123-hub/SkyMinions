@@ -1,26 +1,47 @@
-menus:
-  main:
-    title: "&8Minion Overview"
-    size: 54
-    items:
-      storage:
-        slot: 21
-        material: "CHEST"
-        name: "&aCollect Items"
-      upgrades:
-        slot: 23
-        material: "ANVIL"
-        name: "&eUpgrade Minion"
-      fuel:
-        slot: 30
-        material: "BLAZE_POWDER"
-        name: "&cAdd Fuel"
-      equipment:
-        slot: 32
-        material: "DIAMOND_PICKAXE"
-        name: "&bMinion Equipment"
-      pickup:
-        slot: 49
-        material: "BEDROCK"
-        name: "&cPick Up Minion"
+# SkyMinions GUI Configuration
+main-menu:
+  title: "&8Minion Overview - Level {LEVEL}"
+  size: 54
+  fill-glass: true
+  glass-material: "GRAY_STAINED_GLASS_PANE"
+  
+  items:
+    info:
+      slot: 13
+      material: "CHEST"
+      name: "&e{TYPE} Minion {TIER}"
+      lore:
+        - "&7Status: {STATUS}"
+        - "&7Level: &a{LEVEL}"
+        - "&7Stored Items: &e{STORED}/{CAPACITY}"
+        - ""
+        - "&eClick to collect items!"
+        
+    upgrade:
+      slot: 29
+      material: "ANVIL"
+      name: "&aUpgrade Minion"
+      lore:
+        - "&7Next Level: &aLevel {NEXT_LEVEL}"
+        - "&7Upgrade Cost: &6${COST}"
+        - ""
+        - "&eClick to upgrade!"
+        
+    fuel:
+      slot: 31
+      material: "BLAZE_POWDER"
+      name: "&cMinion Fuel"
+      lore:
+        - "&7Active Fuel: &e{FUEL_NAME}"
+        - "&7Speed Multiplier: &a+{SPEED}%"
+        - "&7Time Remaining: &f{TIME_LEFT}"
+        - ""
+        - "&eClick to manage fuel!"
+
+    close:
+      slot: 49
+      material: "BARRIER"
+      name: "&cClose Menu"
+      lore:
+        - "&7Click to exit."
         
